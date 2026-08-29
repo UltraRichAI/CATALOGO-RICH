@@ -658,15 +658,33 @@ export const AdminPage: React.FC<AdminPageProps> = ({
               </select>
             </div>
 
-            <button
-              type="button"
-              id="btn-create-product-modal"
-              onClick={openCreateProductModal}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Nueva Cuenta / Suscripción</span>
-            </button>
+            <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+              <button
+                type="button"
+                id="btn-quick-seed-catalog"
+                onClick={handleSeedDatabase}
+                disabled={isSeeding}
+                className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-2xs cursor-pointer border border-slate-200 flex-1 sm:flex-initial"
+                title="Carga todos los productos predeterminados (Canva Pro, Gemini Pro, ChatGPT Plus, etc.)"
+              >
+                {isSeeding ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600" />
+                ) : (
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                )}
+                <span>{isSeeding ? 'Sincronizando...' : 'Cargar Catálogo Oficial'}</span>
+              </button>
+
+              <button
+                type="button"
+                id="btn-create-product-modal"
+                onClick={openCreateProductModal}
+                className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 cursor-pointer flex-1 sm:flex-initial"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Nueva Cuenta</span>
+              </button>
+            </div>
           </div>
 
           {/* Products Table */}

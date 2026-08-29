@@ -41,20 +41,15 @@ export const HomePage: React.FC<HomePageProps> = ({
   );
 
   const featuredProducts = products.filter((p) => p.active && p.featured);
+  const activeProducts = products.filter((p) => p.active);
   const activeCategories = categories.filter((c) => c.active);
 
-  // Identify Canva Pro and Gemini Pro dynamically
-  const canvaProduct =
-    products.find((p) => p.name.toLowerCase().includes('canva')) || products[0];
-  const geminiProduct =
-    products.find((p) => p.name.toLowerCase().includes('gemini')) || products[1];
-
-  const canvaImg =
-    canvaProduct?.imageUrl ||
-    'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?auto=format&fit=crop&w=800&q=80';
-  const geminiImg =
-    geminiProduct?.imageUrl ||
-    'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80';
+  // Showcase up to 2 active products dynamically (prioritize featured, then first available)
+  const showcaseProducts = (
+    featuredProducts.length >= 2
+      ? featuredProducts.slice(0, 2)
+      : activeProducts.slice(0, 2)
+  );
 
   return (
     <div id="home-page-container" className="space-y-12 sm:space-y-16 pb-16">
@@ -184,119 +179,77 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </span>
               </div>
 
-              {/* 2 Feature Cards Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* 1. CANVA PRO CARD */}
-                <div
-                  onClick={() =>
-                    canvaProduct
-                      ? onNavigate(`/productos/${canvaProduct.id}`)
-                      : onNavigate('/productos')
-                  }
-                  className="group relative bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-xl hover:border-emerald-500/60 transition-all duration-300 cursor-pointer flex flex-col justify-between"
-                >
-                  {/* Top Badge */}
-                  <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
-                    <span className="inline-flex items-center gap-1 bg-emerald-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
-                      <GraduationCap className="w-3 h-3" />
-                      S/ 5.00 UNIVERSITARIO
-                    </span>
-                  </div>
+              {/* Dynamic Showcase Cards Grid */}
+              <div className={`grid gap-4 ${showcaseProducts.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
+                {showcaseProducts.map((prod) => (
+                  <div
+                    key={prod.id}
+                    onClick={() => onNavigate(`/productos/${prod.id}`)}
+                    className="group relative bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-xl hover:border-emerald-500/60 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                  >
+                    {/* Top Badge */}
+                    <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
+                      <span className="inline-flex items-center gap-1 bg-emerald-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
+                        <Sparkles className="w-3 h-3" />
+                        {prod.badge || (prod.duration ? `${prod.duration}` : 'CUENTA PRO')}
+                      </span>
+                    </div>
 
-                  {/* Image Presentation */}
-                  <div className="relative w-full aspect-square bg-slate-900/80 overflow-hidden flex items-center justify-center p-2">
-                    <img
-                      src={canvaImg}
-                      alt="Canva Pro Universitario"
-                      aria-hidden="true"
-                      className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110 pointer-events-none select-none"
-                      referrerPolicy="no-referrer"
-                    />
-                    <img
-                      src={canvaImg}
-                      alt="Canva Pro Universitario"
-                      className="relative z-10 max-h-full max-w-full object-contain rounded-xl shadow-xs group-hover:scale-105 transition-transform duration-500"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
+                    {/* Image Presentation */}
+                    <div className="relative w-full aspect-square bg-slate-900/80 overflow-hidden flex items-center justify-center p-2">
+                      <img
+                        src={prod.imageUrl}
+                        alt={prod.name}
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110 pointer-events-none select-none"
+                        referrerPolicy="no-referrer"
+                      />
+                      <img
+                        src={prod.imageUrl}
+                        alt={prod.name}
+                        className="relative z-10 max-h-full max-w-full object-contain rounded-xl shadow-xs group-hover:scale-105 transition-transform duration-500"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
 
-                  {/* Card Bottom Details */}
-                  <div className="p-3.5 bg-slate-900/95 border-t border-slate-800/80 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-extrabold text-sm text-white group-hover:text-emerald-400 transition-colors">
-                        Canva Pro
-                      </h4>
-                      <div className="text-right">
-                        <span className="text-xs font-black text-emerald-400">S/ 5.00</span>
-                        <span className="text-[10px] text-slate-400 line-through ml-1.5">S/ 35</span>
+                    {/* Card Bottom Details */}
+                    <div className="p-3.5 bg-slate-900/95 border-t border-slate-800/80 space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-extrabold text-sm text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
+                          {prod.name}
+                        </h4>
+                        <div className="text-right shrink-0">
+                          <span className="text-xs font-black text-emerald-400">
+                            {APP_CONFIG.currencySymbol} {prod.price.toFixed(2)}
+                          </span>
+                          {prod.comparePrice && prod.comparePrice > prod.price && (
+                            <span className="text-[10px] text-slate-400 line-through ml-1.5">
+                              {APP_CONFIG.currencySymbol} {prod.comparePrice.toFixed(0)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-slate-400 line-clamp-1">
+                        {prod.description || 'Garantía y entrega inmediata a tu correo'}
+                      </p>
+                      <div className="pt-1 flex items-center justify-between text-[10px] font-bold text-emerald-400">
+                        <span>Ver detalles & pedir</span>
+                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
-                    <p className="text-[11px] text-slate-400 line-clamp-1">
-                      Removedor de fondos + IA Mágica + Kit de marcas
-                    </p>
-                    <div className="pt-1 flex items-center justify-between text-[10px] font-bold text-emerald-400">
-                      <span>Ver detalles & pedir</span>
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                    </div>
                   </div>
-                </div>
+                ))}
 
-                {/* 2. GEMINI PRO CARD */}
-                <div
-                  onClick={() =>
-                    geminiProduct
-                      ? onNavigate(`/productos/${geminiProduct.id}`)
-                      : onNavigate('/productos')
-                  }
-                  className="group relative bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 rounded-2xl overflow-hidden border border-indigo-900/60 shadow-xl hover:border-indigo-400/60 transition-all duration-300 cursor-pointer flex flex-col justify-between"
-                >
-                  {/* Top Badge */}
-                  <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
-                    <span className="inline-flex items-center gap-1 bg-indigo-500 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
-                      <Zap className="w-3 h-3 fill-current" />
-                      18 MESES IA
-                    </span>
+                {showcaseProducts.length === 0 && (
+                  <div
+                    onClick={() => onNavigate('/productos')}
+                    className="col-span-full p-8 text-center bg-slate-900/90 border border-slate-800 rounded-2xl cursor-pointer hover:border-emerald-500/50"
+                  >
+                    <Sparkles className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+                    <p className="text-sm font-bold text-white">Explora nuestro Catálogo Digital</p>
+                    <p className="text-xs text-slate-400 mt-1">Haz clic aquí para ver todos los productos disponibles</p>
                   </div>
-
-                  {/* Image Presentation */}
-                  <div className="relative w-full aspect-square bg-slate-950 overflow-hidden flex items-center justify-center p-2">
-                    <img
-                      src={geminiImg}
-                      alt="Google Gemini Pro 18 Meses"
-                      aria-hidden="true"
-                      className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110 pointer-events-none select-none"
-                      referrerPolicy="no-referrer"
-                    />
-                    <img
-                      src={geminiImg}
-                      alt="Google Gemini Pro 18 Meses"
-                      className="relative z-10 max-h-full max-w-full object-contain rounded-xl shadow-xs group-hover:scale-105 transition-transform duration-500"
-                      referrerPolicy="no-referrer"
-                    />
-                  </div>
-
-                  {/* Card Bottom Details */}
-                  <div className="p-3.5 bg-slate-900/95 border-t border-slate-800/80 space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-extrabold text-sm text-white group-hover:text-indigo-300 transition-colors">
-                        Gemini Pro
-                      </h4>
-                      <div className="text-right">
-                        <span className="text-xs font-black text-indigo-400">
-                          {geminiProduct ? `S/ ${geminiProduct.price.toFixed(2)}` : 'S/ 59.90'}
-                        </span>
-                        <span className="text-[10px] text-slate-400 line-through ml-1.5">S/ 159</span>
-                      </div>
-                    </div>
-                    <p className="text-[11px] text-slate-400 line-clamp-1">
-                      2TB Google One + 1M Tokens + Gemini Live
-                    </p>
-                    <div className="pt-1 flex items-center justify-between text-[10px] font-bold text-indigo-300">
-                      <span>Ver detalles & pedir</span>
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Bottom Guarantee Pill - Striking Design */}

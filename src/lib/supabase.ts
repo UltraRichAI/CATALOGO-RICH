@@ -145,7 +145,7 @@ export const supabaseService = {
           .select('*')
           .order('created_at', { ascending: false });
 
-        if (!error && data && data.length > 0) {
+        if (!error && Array.isArray(data)) {
           const mapped: Product[] = data.map((item: any) => ({
             id: String(item.id),
             name: item.name,
@@ -164,15 +164,17 @@ export const supabaseService = {
           }));
           setLocalProducts(mapped);
           return mapped;
+        } else if (error) {
+          console.warn('Supabase fetch products error (check table public.products):', error.message);
         }
       } catch (err) {
         console.warn('Supabase fetch products error, fallback to local storage:', err);
       }
     }
 
-    // Local Storage fallback
+    // Local Storage fallback (only for offline/initial prototype)
     let local = getLocalProducts();
-    if (local.length === 0) {
+    if (local.length === 0 && !isSupabaseConfigured) {
       const seeded = seedInitialLocalData();
       return seeded.products;
     }
@@ -188,7 +190,7 @@ export const supabaseService = {
           .select('*')
           .order('created_at', { ascending: true });
 
-        if (!error && data && data.length > 0) {
+        if (!error && Array.isArray(data)) {
           const mapped: Category[] = data.map((item: any) => ({
             id: String(item.id),
             name: item.name,
@@ -199,6 +201,8 @@ export const supabaseService = {
           }));
           setLocalCategories(mapped);
           return mapped;
+        } else if (error) {
+          console.warn('Supabase fetch categories error:', error.message);
         }
       } catch (err) {
         console.warn('Supabase fetch categories error, fallback to local:', err);
@@ -206,11 +210,44 @@ export const supabaseService = {
     }
 
     let local = getLocalCategories();
-    if (local.length === 0) {
+    if (local.length === 0 && !isSupabaseConfigured) {
       const seeded = seedInitialLocalData();
       return seeded.categories;
     }
     return local;
+  },
+
+  // Test Supabase Cloud Tables Connection
+  async testCloudConnection(): Promise<{ connected: boolean; message: string; tableExists: boolean }> {
+    if (!supabase || !isSupabaseConfigured) {
+      return {
+        connected: false,
+        tableExists: false,
+        message: 'No se han detectado variables de entorno de Supabase.',
+      };
+    }
+
+    try {
+      const { data, error } = await supabase.from('products').select('id').limit(1);
+      if (error) {
+        return {
+          connected: true,
+          tableExists: false,
+          message: `Conectado a Supabase, pero la tabla 'products' no existe o tiene error de permisos: ${error.message}`,
+        };
+      }
+      return {
+        connected: true,
+        tableExists: true,
+        message: 'Conexión a Supabase Cloud exitosa y tablas operativas en tiempo real.',
+      };
+    } catch (err: any) {
+      return {
+        connected: false,
+        tableExists: false,
+        message: `Error de red al conectar con Supabase: ${err?.message || err}`,
+      };
+    }
   },
 
   // Save Product (Insert or Update)

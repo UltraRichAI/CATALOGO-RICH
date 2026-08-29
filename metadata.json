@@ -1,0 +1,6 @@
+{
+  "name": "RICH PRO - Catálogo de Cuentas & Suscripciones Pro",
+  "description": "Catálogo digital oficial de RICH PRO. Canva Pro con descuento especial para alumnos universitarios a S/ 5.00, Gemini Pro, IA y suscripciones digitales con atención directa por WhatsApp.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

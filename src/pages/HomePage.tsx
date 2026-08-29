@@ -51,6 +51,27 @@ export const HomePage: React.FC<HomePageProps> = ({
       : activeProducts.slice(0, 2)
   );
 
+  const minPrice = activeProducts.length > 0
+    ? Math.min(...activeProducts.map((p) => p.price))
+    : 5;
+
+  // Dynamic hero headlines based on active catalog
+  const heroTitle = activeProducts.length === 1
+    ? activeProducts[0].name
+    : activeProducts.length === 2
+    ? `${activeProducts[0].name} & ${activeProducts[1].name}`
+    : 'Cuentas Premium & Suscripciones Digitales';
+
+  const heroSubtitle = activeProducts.length === 1
+    ? (activeProducts[0].description || 'Acceso oficial con activación directa a tu correo personal.')
+    : 'Todo lo que necesitas para crear, estudiar y trabajar al máximo nivel.';
+
+  const heroOfferText = activeProducts.length === 1
+    ? `${activeProducts[0].name} a solo ${APP_CONFIG.currencySymbol} ${activeProducts[0].price.toFixed(2)} · Garantía y soporte 24/7`
+    : activeProducts.length === 2
+    ? `${activeProducts[0].name} desde ${APP_CONFIG.currencySymbol} ${activeProducts[0].price.toFixed(2)} · ${activeProducts[1].name} desde ${APP_CONFIG.currencySymbol} ${activeProducts[1].price.toFixed(2)}`
+    : `Suscripciones activas desde ${APP_CONFIG.currencySymbol} ${minPrice.toFixed(2)} · Entrega y activación en minutos`;
+
   return (
     <div id="home-page-container" className="space-y-12 sm:space-y-16 pb-16">
       {/* Eye-catching Announcement Top Bar */}
@@ -66,7 +87,19 @@ export const HomePage: React.FC<HomePageProps> = ({
               OFERTA ESTRELLA:
             </span>
             <span>
-              Canva Pro Universitario a solo <strong className="text-emerald-300 underline underline-offset-2">S/ 5.00</strong> y Gemini Pro <strong className="text-emerald-300">18 Meses</strong> con activación inmediata.
+              {showcaseProducts.length >= 2 ? (
+                <>
+                  {showcaseProducts[0].name} a solo <strong className="text-emerald-300 underline underline-offset-2">{APP_CONFIG.currencySymbol} {showcaseProducts[0].price.toFixed(2)}</strong> y {showcaseProducts[1].name} a <strong className="text-emerald-300">{APP_CONFIG.currencySymbol} {showcaseProducts[1].price.toFixed(2)}</strong> con activación inmediata.
+                </>
+              ) : showcaseProducts.length === 1 ? (
+                <>
+                  {showcaseProducts[0].name} a solo <strong className="text-emerald-300 underline underline-offset-2">{APP_CONFIG.currencySymbol} {showcaseProducts[0].price.toFixed(2)}</strong> con activación inmediata a tu correo.
+                </>
+              ) : (
+                <>
+                  Cuentas & Suscripciones Digitales con garantía y activación inmediata por WhatsApp.
+                </>
+              )}
             </span>
           </div>
 
@@ -96,26 +129,26 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-[1.1] tracking-tight">
-                Canva Pro + Gemini Pro
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-[1.15] tracking-tight">
+                {heroTitle}
               </h1>
-              <p className="text-lg sm:text-xl font-bold text-emerald-700">
-                Todo lo que necesitas para crear, estudiar y trabajar mejor.
+              <p className="text-base sm:text-lg font-bold text-emerald-700 line-clamp-2">
+                {heroSubtitle}
               </p>
             </div>
 
-            <p className="text-slate-600 text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
-              Herramientas premium de diseño e inteligencia artificial para estudiantes, creadores y profesionales. Accede a funciones avanzadas y potencia tu productividad.
+            <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
+              Herramientas premium de diseño, productividad e inteligencia artificial para estudiantes, creadores y profesionales. Accede a funciones avanzadas y ahorra dinero.
             </p>
 
             {/* University & Instant Activation Highlight Banner */}
             <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50/70 to-emerald-50 border border-emerald-200 text-left space-y-1.5 shadow-2xs max-w-xl mx-auto lg:mx-0">
               <div className="flex items-center gap-2 text-emerald-900 font-black text-xs sm:text-sm uppercase tracking-wider">
                 <GraduationCap className="w-4 h-4 text-emerald-700" />
-                <span>🎓 PRECIOS ESPECIALES PARA ESTUDIANTES</span>
+                <span>🎓 PRECIOS ESPECIALES & GARANTÍA TOTAL</span>
               </div>
               <p className="text-xs sm:text-sm text-emerald-800 font-bold leading-relaxed">
-                Canva Pro desde <span className="text-emerald-950 font-black underline decoration-emerald-500">S/ 5.00</span> · Gemini Pro desde <span className="text-emerald-950 font-black underline decoration-emerald-500">S/ 5.00</span>
+                {heroOfferText}
               </p>
             </div>
 
@@ -145,8 +178,10 @@ export const HomePage: React.FC<HomePageProps> = ({
             {/* Quick Metrics */}
             <div className="pt-4 grid grid-cols-3 gap-3 border-t border-slate-100 max-w-md mx-auto lg:mx-0 text-left">
               <div>
-                <div className="text-xl sm:text-2xl font-black text-emerald-600">S/ 5.00</div>
-                <div className="text-[11px] text-slate-500 font-bold">Canva Universitario</div>
+                <div className="text-xl sm:text-2xl font-black text-emerald-600">
+                  {APP_CONFIG.currencySymbol} {minPrice.toFixed(2)}
+                </div>
+                <div className="text-[11px] text-slate-500 font-bold">Desde / Mejor Precio</div>
               </div>
               <div>
                 <div className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-1">
@@ -165,14 +200,14 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
           </div>
 
-          {/* Right Visual Showcase: Canva Pro & Gemini Pro Cards */}
+          {/* Right Visual Showcase */}
           <div className="lg:col-span-6 flex flex-col items-center">
             <div className="w-full max-w-lg space-y-4">
               {/* Header Badge */}
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center gap-1.5 text-xs font-black text-slate-800 uppercase tracking-wider">
                   <Flame className="w-4 h-4 text-rose-500 fill-current" />
-                  <span>Cuentas Más Vendidas</span>
+                  <span>{showcaseProducts.length === 1 ? 'Cuenta Destacada' : 'Cuentas Más Vendidas'}</span>
                 </div>
                 <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                   Activación Inmediata
@@ -180,77 +215,142 @@ export const HomePage: React.FC<HomePageProps> = ({
               </div>
 
               {/* Dynamic Showcase Cards Grid */}
-              <div className={`grid gap-4 ${showcaseProducts.length === 1 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
-                {showcaseProducts.map((prod) => (
-                  <div
-                    key={prod.id}
-                    onClick={() => onNavigate(`/productos/${prod.id}`)}
-                    className="group relative bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-xl hover:border-emerald-500/60 transition-all duration-300 cursor-pointer flex flex-col justify-between"
-                  >
-                    {/* Top Badge */}
-                    <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
-                      <span className="inline-flex items-center gap-1 bg-emerald-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
-                        <Sparkles className="w-3 h-3" />
-                        {prod.badge || (prod.duration ? `${prod.duration}` : 'CUENTA PRO')}
+              {showcaseProducts.length === 1 ? (
+                /* SINGLE PRODUCT: Elegant compact card, no awkward giant square */
+                <div
+                  onClick={() => onNavigate(`/productos/${showcaseProducts[0].id}`)}
+                  className="group relative bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl hover:border-emerald-500/60 transition-all duration-300 cursor-pointer flex flex-col max-w-md mx-auto w-full"
+                >
+                  {/* Top Badges */}
+                  <div className="absolute top-3 left-3 z-20 flex flex-wrap gap-1.5 pointer-events-none">
+                    <span className="inline-flex items-center gap-1 bg-emerald-500 text-slate-950 text-[11px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
+                      <Sparkles className="w-3.5 h-3.5 fill-current" />
+                      {showcaseProducts[0].badge || (showcaseProducts[0].duration ? `${showcaseProducts[0].duration}` : 'CUENTA PRO')}
+                    </span>
+                    {showcaseProducts[0].duration && (
+                      <span className="inline-flex items-center gap-1 bg-slate-800/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-700">
+                        <Clock className="w-3 h-3 text-emerald-400" />
+                        {showcaseProducts[0].duration}
                       </span>
-                    </div>
+                    )}
+                  </div>
 
-                    {/* Image Presentation */}
-                    <div className="relative w-full aspect-square bg-slate-900/80 overflow-hidden flex items-center justify-center p-2">
-                      <img
-                        src={prod.imageUrl}
-                        alt={prod.name}
-                        aria-hidden="true"
-                        className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110 pointer-events-none select-none"
-                        referrerPolicy="no-referrer"
-                      />
-                      <img
-                        src={prod.imageUrl}
-                        alt={prod.name}
-                        className="relative z-10 max-h-full max-w-full object-contain rounded-xl shadow-xs group-hover:scale-105 transition-transform duration-500"
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
+                  {/* Image Presentation */}
+                  <div className="relative w-full h-64 sm:h-72 bg-slate-950 overflow-hidden flex items-center justify-center p-4">
+                    <img
+                      src={showcaseProducts[0].imageUrl}
+                      alt={showcaseProducts[0].name}
+                      aria-hidden="true"
+                      className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-110 pointer-events-none select-none"
+                      referrerPolicy="no-referrer"
+                    />
+                    <img
+                      src={showcaseProducts[0].imageUrl}
+                      alt={showcaseProducts[0].name}
+                      className="relative z-10 max-h-full max-w-full object-contain rounded-xl shadow-md group-hover:scale-105 transition-transform duration-500"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
 
-                    {/* Card Bottom Details */}
-                    <div className="p-3.5 bg-slate-900/95 border-t border-slate-800/80 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-extrabold text-sm text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
-                          {prod.name}
-                        </h4>
-                        <div className="text-right shrink-0">
-                          <span className="text-xs font-black text-emerald-400">
-                            {APP_CONFIG.currencySymbol} {prod.price.toFixed(2)}
+                  {/* Card Bottom Details */}
+                  <div className="p-4 bg-slate-900/95 border-t border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <h4 className="font-extrabold text-base text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
+                        {showcaseProducts[0].name}
+                      </h4>
+                      <div className="text-right shrink-0">
+                        <span className="text-base font-black text-emerald-400">
+                          {APP_CONFIG.currencySymbol} {showcaseProducts[0].price.toFixed(2)}
+                        </span>
+                        {showcaseProducts[0].comparePrice && showcaseProducts[0].comparePrice > showcaseProducts[0].price && (
+                          <span className="text-xs text-slate-400 line-through ml-2">
+                            {APP_CONFIG.currencySymbol} {showcaseProducts[0].comparePrice.toFixed(0)}
                           </span>
-                          {prod.comparePrice && prod.comparePrice > prod.price && (
-                            <span className="text-[10px] text-slate-400 line-through ml-1.5">
-                              {APP_CONFIG.currencySymbol} {prod.comparePrice.toFixed(0)}
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-400 line-clamp-2">
+                      {showcaseProducts[0].description || 'Activación garantizada a tu correo personal con soporte 24/7.'}
+                    </p>
+                    <div className="pt-2 flex items-center justify-between text-xs font-bold text-emerald-400 border-t border-slate-800/80">
+                      <span>Ver detalles & pedir por WhatsApp</span>
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              ) : showcaseProducts.length >= 2 ? (
+                /* TWO PRODUCTS: Neat 2-column grid */
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {showcaseProducts.map((prod) => (
+                    <div
+                      key={prod.id}
+                      onClick={() => onNavigate(`/productos/${prod.id}`)}
+                      className="group relative bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-xl hover:border-emerald-500/60 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                    >
+                      {/* Top Badge */}
+                      <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
+                        <span className="inline-flex items-center gap-1 bg-emerald-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
+                          <Sparkles className="w-3 h-3" />
+                          {prod.badge || (prod.duration ? `${prod.duration}` : 'CUENTA PRO')}
+                        </span>
+                      </div>
+
+                      {/* Image Presentation */}
+                      <div className="relative w-full aspect-square bg-slate-900/80 overflow-hidden flex items-center justify-center p-2">
+                        <img
+                          src={prod.imageUrl}
+                          alt={prod.name}
+                          aria-hidden="true"
+                          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110 pointer-events-none select-none"
+                          referrerPolicy="no-referrer"
+                        />
+                        <img
+                          src={prod.imageUrl}
+                          alt={prod.name}
+                          className="relative z-10 max-h-full max-w-full object-contain rounded-xl shadow-xs group-hover:scale-105 transition-transform duration-500"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+
+                      {/* Card Bottom Details */}
+                      <div className="p-3.5 bg-slate-900/95 border-t border-slate-800/80 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-extrabold text-sm text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
+                            {prod.name}
+                          </h4>
+                          <div className="text-right shrink-0">
+                            <span className="text-xs font-black text-emerald-400">
+                              {APP_CONFIG.currencySymbol} {prod.price.toFixed(2)}
                             </span>
-                          )}
+                            {prod.comparePrice && prod.comparePrice > prod.price && (
+                              <span className="text-[10px] text-slate-400 line-through ml-1.5">
+                                {APP_CONFIG.currencySymbol} {prod.comparePrice.toFixed(0)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-slate-400 line-clamp-1">
+                          {prod.description || 'Garantía y entrega inmediata a tu correo'}
+                        </p>
+                        <div className="pt-1 flex items-center justify-between text-[10px] font-bold text-emerald-400">
+                          <span>Ver detalles & pedir</span>
+                          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
-                      <p className="text-[11px] text-slate-400 line-clamp-1">
-                        {prod.description || 'Garantía y entrega inmediata a tu correo'}
-                      </p>
-                      <div className="pt-1 flex items-center justify-between text-[10px] font-bold text-emerald-400">
-                        <span>Ver detalles & pedir</span>
-                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                      </div>
                     </div>
-                  </div>
-                ))}
-
-                {showcaseProducts.length === 0 && (
-                  <div
-                    onClick={() => onNavigate('/productos')}
-                    className="col-span-full p-8 text-center bg-slate-900/90 border border-slate-800 rounded-2xl cursor-pointer hover:border-emerald-500/50"
-                  >
-                    <Sparkles className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
-                    <p className="text-sm font-bold text-white">Explora nuestro Catálogo Digital</p>
-                    <p className="text-xs text-slate-400 mt-1">Haz clic aquí para ver todos los productos disponibles</p>
-                  </div>
-                )}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                /* NO PRODUCTS YET */
+                <div
+                  onClick={() => onNavigate('/productos')}
+                  className="p-8 text-center bg-slate-900/90 border border-slate-800 rounded-2xl cursor-pointer hover:border-emerald-500/50"
+                >
+                  <Sparkles className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-white">Explora nuestro Catálogo Digital</p>
+                  <p className="text-xs text-slate-400 mt-1">Haz clic aquí para ver todos los productos disponibles</p>
+                </div>
+              )}
 
               {/* Bottom Guarantee Pill - Striking Design */}
               <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 border border-emerald-500/40 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between text-xs shadow-lg shadow-emerald-950/20 relative overflow-hidden group">

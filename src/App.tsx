@@ -190,7 +190,10 @@ export default function App() {
             {renderCurrentView()}
           </main>
 
-          <Footer navigate={navigate} />
+          <Footer
+            navigate={navigate}
+            isAdminLoggedIn={Boolean(adminUser)}
+          />
 
           {/* Cart Drawer */}
           <CartDrawer onNavigateToCatalog={() => navigate('/productos')} />

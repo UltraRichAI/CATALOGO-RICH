@@ -5,9 +5,10 @@ import { getGeneralWhatsAppUrl } from '../utils/whatsapp.ts';
 
 interface FooterProps {
   navigate: (route: string) => void;
+  isAdminLoggedIn?: boolean;
 }
 
-export const Footer: React.FC<FooterProps> = ({ navigate }) => {
+export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = false }) => {
   const waUrl = getGeneralWhatsAppUrl();
 
   return (
@@ -104,16 +105,18 @@ export const Footer: React.FC<FooterProps> = ({ navigate }) => {
                   Categorías
                 </button>
               </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => navigate('/admin')}
-                  className="hover:text-emerald-400 transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <Lock className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Panel Administrador</span>
-                </button>
-              </li>
+              {isAdminLoggedIn && (
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/admin')}
+                    className="hover:text-emerald-400 text-emerald-400 transition-colors flex items-center gap-1 cursor-pointer font-bold"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Panel Administrador</span>
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 

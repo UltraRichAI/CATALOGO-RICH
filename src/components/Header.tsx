@@ -141,21 +141,23 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </button>
 
-            {/* Admin Login Pill Button */}
-            <button
-              type="button"
-              id="admin-access-btn"
-              onClick={() => handleNav('/admin')}
-              className={`text-xs sm:text-sm font-semibold px-4 py-2 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer ${
-                currentRoute.startsWith('/admin')
-                  ? 'bg-slate-900 text-white shadow-xs'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
-              }`}
-              title="Panel Administrativo"
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <span>{isAdminLoggedIn ? 'Panel Admin' : 'Admin Login'}</span>
-            </button>
+            {/* Admin Pill Button - ONLY visible when admin is logged in */}
+            {isAdminLoggedIn && (
+              <button
+                type="button"
+                id="admin-access-btn"
+                onClick={() => handleNav('/admin')}
+                className={`text-xs sm:text-sm font-semibold px-4 py-2 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer ${
+                  currentRoute.startsWith('/admin')
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
+                }`}
+                title="Panel Administrativo"
+              >
+                <Lock className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Panel Admin</span>
+              </button>
+            )}
 
             {/* Mobile Menu Toggle */}
             <button

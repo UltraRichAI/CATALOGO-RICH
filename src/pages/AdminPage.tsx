@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Lock,
   Mail,
@@ -9,6 +9,7 @@ import {
   Trash2,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   Sparkles,
   Layers,
   Package,
@@ -26,6 +27,7 @@ import {
   Tag,
   Upload,
   Image as ImageIcon,
+  RefreshCw,
 } from 'lucide-react';
 import { supabase, supabaseService, isSupabaseConfigured, generateId } from '../lib/supabase.ts';
 import type { Product, Category } from '../types/index.ts';
@@ -63,6 +65,27 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
   // Tab navigation
   const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'supabase'>('products');
+
+  // Cloud Diagnostics State
+  const [cloudStatus, setCloudStatus] = useState<{
+    checking: boolean;
+    tested: boolean;
+    connected: boolean;
+    productsTableExists: boolean;
+    categoriesTableExists: boolean;
+    canWrite: boolean;
+    message: string;
+    details?: string;
+  }>({
+    checking: false,
+    tested: false,
+    connected: false,
+    productsTableExists: false,
+    categoriesTableExists: false,
+    canWrite: false,
+    message: '',
+  });
+  const [isSyncingAll, setIsSyncingAll] = useState(false);
 
   // Product Filter
   const [productSearch, setProductSearch] = useState('');
@@ -103,6 +126,55 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   // Seeding State
   const [isSeeding, setIsSeeding] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
+
+  // Cloud status test function
+  const checkCloudStatus = async () => {
+    setCloudStatus((prev) => ({ ...prev, checking: true }));
+    try {
+      const res = await supabaseService.testCloudConnection();
+      setCloudStatus({
+        checking: false,
+        tested: true,
+        connected: res.connected,
+        productsTableExists: res.productsTableExists,
+        categoriesTableExists: res.categoriesTableExists,
+        canWrite: res.canWrite,
+        message: res.message,
+        details: res.details,
+      });
+    } catch (e: any) {
+      setCloudStatus({
+        checking: false,
+        tested: true,
+        connected: false,
+        productsTableExists: false,
+        categoriesTableExists: false,
+        canWrite: false,
+        message: 'Error al comprobar conexión: ' + (e?.message || e),
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (adminUser) {
+      checkCloudStatus();
+    }
+  }, [adminUser]);
+
+  const handleSyncAllToCloud = async () => {
+    setIsSyncingAll(true);
+    try {
+      await supabaseService.syncAllToSupabase(products, categories);
+      await onDataChanged();
+      await checkCloudStatus();
+      showToast(`¡Sincronización completada! ${products.length} productos y ${categories.length} categorías guardados en Supabase Cloud.`, 'success');
+    } catch (err: any) {
+      console.error('Error al sincronizar a la nube:', err);
+      showToast('Error al guardar en Supabase: ' + (err.message || ''), 'error');
+    } finally {
+      setIsSyncingAll(false);
+    }
+  };
 
   // ----------------------------------------------------
   // AUTHENTICATION HANDLERS (Supabase & Admin Auth)
@@ -578,6 +650,122 @@ export const AdminPage: React.FC<AdminPageProps> = ({
           <div className="text-2xl font-extrabold text-indigo-700 mt-1">{totalCategories}</div>
           <div className="text-[11px] text-slate-400 mt-0.5">Familias de servicios</div>
         </div>
+      </div>
+
+      {/* Cloud Diagnostic & Sync Status Card */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className={`w-3 h-3 rounded-full ${
+              cloudStatus.checking
+                ? 'bg-amber-400 animate-ping'
+                : cloudStatus.productsTableExists && cloudStatus.categoriesTableExists
+                ? 'bg-emerald-500'
+                : 'bg-rose-500'
+            }`} />
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <span>Estado de Supabase Cloud & Persistencia de Datos</span>
+                {cloudStatus.checking && <span className="text-xs text-slate-400 font-normal">(Verificando...)</span>}
+              </h2>
+              <p className="text-xs text-slate-500">
+                {cloudStatus.tested
+                  ? cloudStatus.message
+                  : 'Verificando tablas en tu proyecto Supabase (yihkcjdgwvtfunlbocmb)...'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={checkCloudStatus}
+              disabled={cloudStatus.checking}
+              className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${cloudStatus.checking ? 'animate-spin' : ''}`} />
+              <span>Verificar Conexión</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSyncAllToCloud}
+              disabled={isSyncingAll}
+              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all shadow-xs disabled:opacity-50"
+            >
+              {isSyncingAll ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Database className="w-3.5 h-3.5" />}
+              <span>Sincronizar Todo a la Nube</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Warning if tables do not exist in Supabase yet */}
+        {cloudStatus.tested && (!cloudStatus.productsTableExists || !cloudStatus.categoriesTableExists) && (
+          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-950 space-y-3">
+            <div className="flex items-start gap-2.5">
+              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="text-xs font-bold text-amber-900">
+                  ¡Atención! Las tablas aún no han sido creadas en tu proyecto de Supabase
+                </p>
+                <p className="text-xs text-amber-800 leading-relaxed">
+                  Para que las ediciones, creaciones o eliminaciones que hagas en este panel se almacenen directamente en tu base de datos Supabase en la nube, debes ejecutar el script SQL de creación de tablas.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-xs">
+              <div className="p-2.5 bg-white rounded-lg border border-amber-200">
+                <span className="font-bold text-slate-800 block">Paso 1:</span>
+                <span className="text-slate-600 text-[11px]">Copia el script SQL de la base de datos</span>
+              </div>
+              <div className="p-2.5 bg-white rounded-lg border border-amber-200">
+                <span className="font-bold text-slate-800 block">Paso 2:</span>
+                <span className="text-slate-600 text-[11px]">Abre el SQL Editor en Supabase</span>
+              </div>
+              <div className="p-2.5 bg-white rounded-lg border border-amber-200">
+                <span className="font-bold text-slate-800 block">Paso 3:</span>
+                <span className="text-slate-600 text-[11px]">Pega y haz clic en RUN</span>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={copySqlScript}
+                className="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-xs"
+              >
+                {copiedSql ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                <span>{copiedSql ? '¡SQL Copiado!' : 'Copiar Script SQL'}</span>
+              </button>
+
+              <a
+                href={`https://supabase.com/dashboard/project/${APP_CONFIG.supabaseProjectId}/sql/new`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors shadow-xs"
+              >
+                <ExternalLink className="w-4 h-4" />
+                <span>Abrir SQL Editor en Supabase ({APP_CONFIG.supabaseProjectId})</span>
+              </a>
+            </div>
+          </div>
+        )}
+
+        {/* Success message when tables exist */}
+        {cloudStatus.tested && cloudStatus.productsTableExists && cloudStatus.categoriesTableExists && (
+          <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>
+                <strong>Tablas Activas:</strong> <code>public.products</code> y <code>public.categories</code> están correctamente vinculadas. Cualquier modificación se sincroniza inmediatamente.
+              </span>
+            </div>
+            <span className="font-bold text-[11px] text-emerald-700 uppercase tracking-wider hidden sm:inline">
+              100% Operativo
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Navigation Tabs */}

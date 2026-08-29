@@ -218,33 +218,62 @@ export const supabaseService = {
   },
 
   // Test Supabase Cloud Tables Connection
-  async testCloudConnection(): Promise<{ connected: boolean; message: string; tableExists: boolean }> {
+  async testCloudConnection(): Promise<{
+    connected: boolean;
+    productsTableExists: boolean;
+    categoriesTableExists: boolean;
+    canWrite: boolean;
+    message: string;
+    details?: string;
+  }> {
     if (!supabase || !isSupabaseConfigured) {
       return {
         connected: false,
-        tableExists: false,
-        message: 'No se han detectado variables de entorno de Supabase.',
+        productsTableExists: false,
+        categoriesTableExists: false,
+        canWrite: false,
+        message: 'No se han detectado credenciales de Supabase válidas.',
       };
     }
 
     try {
-      const { data, error } = await supabase.from('products').select('id').limit(1);
-      if (error) {
+      // 1. Check categories table
+      const { error: catErr } = await supabase.from('categories').select('id').limit(1);
+      const categoriesTableExists = !catErr;
+
+      // 2. Check products table
+      const { error: prodErr } = await supabase.from('products').select('id').limit(1);
+      const productsTableExists = !prodErr;
+
+      if (!categoriesTableExists || !productsTableExists) {
+        const missing = [
+          !categoriesTableExists ? 'categories' : null,
+          !productsTableExists ? 'products' : null,
+        ].filter(Boolean).join(' y ');
+
         return {
           connected: true,
-          tableExists: false,
-          message: `Conectado a Supabase, pero la tabla 'products' no existe o tiene error de permisos: ${error.message}`,
+          productsTableExists,
+          categoriesTableExists,
+          canWrite: false,
+          message: `Conectado al proyecto Supabase, pero falta crear la tabla: ${missing}.`,
+          details: prodErr?.message || catErr?.message,
         };
       }
+
       return {
         connected: true,
-        tableExists: true,
-        message: 'Conexión a Supabase Cloud exitosa y tablas operativas en tiempo real.',
+        productsTableExists: true,
+        categoriesTableExists: true,
+        canWrite: true,
+        message: 'Base de datos Supabase en la nube activa y sincronizada en tiempo real.',
       };
     } catch (err: any) {
       return {
         connected: false,
-        tableExists: false,
+        productsTableExists: false,
+        categoriesTableExists: false,
+        canWrite: false,
         message: `Error de red al conectar con Supabase: ${err?.message || err}`,
       };
     }
@@ -299,15 +328,18 @@ export const supabaseService = {
           featured: fullProduct.featured,
           duration: fullProduct.duration || null,
           badge: fullProduct.badge || null,
+          created_at: new Date(fullProduct.createdAt).toISOString(),
           updated_at: new Date(now).toISOString(),
         };
 
         const { error: upsertError } = await supabase.from('products').upsert([payload]);
         if (upsertError) {
-          console.warn('Supabase upsert product notice (check table schema/RLS):', upsertError.message);
+          console.error('Supabase save product error:', upsertError);
+          throw new Error(`Supabase (${upsertError.code || 'Error'}): ${upsertError.message}`);
         }
-      } catch (err) {
-        console.warn('Supabase save product error:', err);
+      } catch (err: any) {
+        console.error('Supabase save product exception:', err);
+        throw err;
       }
     }
 
@@ -322,9 +354,13 @@ export const supabaseService = {
     if (supabase) {
       try {
         const { error } = await supabase.from('products').delete().eq('id', id);
-        if (error) console.warn('Supabase delete error:', error.message);
-      } catch (err) {
-        console.warn('Supabase delete product error:', err);
+        if (error) {
+          console.error('Supabase delete product error:', error);
+          throw new Error(`Supabase (${error.code || 'Error'}): ${error.message}`);
+        }
+      } catch (err: any) {
+        console.error('Supabase delete product exception:', err);
+        throw err;
       }
     }
     return true;
@@ -362,14 +398,17 @@ export const supabaseService = {
           description: fullCat.description,
           image_url: fullCat.imageUrl || null,
           active: fullCat.active,
+          created_at: new Date(fullCat.createdAt).toISOString(),
         };
 
         const { error: catError } = await supabase.from('categories').upsert([payload]);
         if (catError) {
-          console.warn('Supabase save category notice:', catError.message);
+          console.error('Supabase save category error:', catError);
+          throw new Error(`Supabase (${catError.code || 'Error'}): ${catError.message}`);
         }
-      } catch (err) {
-        console.warn('Supabase save category error:', err);
+      } catch (err: any) {
+        console.error('Supabase save category exception:', err);
+        throw err;
       }
     }
 
@@ -383,12 +422,71 @@ export const supabaseService = {
 
     if (supabase) {
       try {
-        await supabase.from('categories').delete().eq('id', id);
-      } catch (err) {
-        console.warn('Supabase delete category error:', err);
+        const { error } = await supabase.from('categories').delete().eq('id', id);
+        if (error) {
+          console.error('Supabase delete category error:', error);
+          throw new Error(`Supabase (${error.code || 'Error'}): ${error.message}`);
+        }
+      } catch (err: any) {
+        console.error('Supabase delete category exception:', err);
+        throw err;
       }
     }
     return true;
+  },
+
+  // Sync all existing local products & categories to Supabase
+  async syncAllToSupabase(products: Product[], categories: Category[]): Promise<{ success: boolean; count: number; error?: string }> {
+    if (!supabase) {
+      throw new Error('Supabase no está configurado');
+    }
+
+    try {
+      // 1. Sync categories first
+      if (categories.length > 0) {
+        const catPayload = categories.map((c) => ({
+          id: c.id,
+          name: c.name,
+          description: c.description || '',
+          image_url: c.imageUrl || null,
+          active: c.active !== false,
+          created_at: new Date(c.createdAt || Date.now()).toISOString(),
+        }));
+        const { error: catErr } = await supabase.from('categories').upsert(catPayload);
+        if (catErr) {
+          throw new Error(`Error sincronizando categorías: ${catErr.message}`);
+        }
+      }
+
+      // 2. Sync products
+      if (products.length > 0) {
+        const prodPayload = products.map((p) => ({
+          id: p.id,
+          name: p.name,
+          description: p.description || '',
+          price: Number(p.price),
+          compare_price: p.comparePrice ? Number(p.comparePrice) : null,
+          image_url: p.imageUrl,
+          category: p.category || '',
+          category_id: p.categoryId || null,
+          active: p.active !== false,
+          featured: Boolean(p.featured),
+          duration: p.duration || null,
+          badge: p.badge || null,
+          created_at: new Date(p.createdAt || Date.now()).toISOString(),
+          updated_at: new Date(p.updatedAt || Date.now()).toISOString(),
+        }));
+        const { error: prodErr } = await supabase.from('products').upsert(prodPayload);
+        if (prodErr) {
+          throw new Error(`Error sincronizando productos: ${prodErr.message}`);
+        }
+      }
+
+      return { success: true, count: products.length };
+    } catch (err: any) {
+      console.error('Error in syncAllToSupabase:', err);
+      throw err;
+    }
   },
 
   // Seed Supabase with RICH PRO catalog
@@ -405,7 +503,10 @@ export const supabaseService = {
           active: c.active,
           created_at: new Date(c.createdAt).toISOString(),
         }));
-        await supabase.from('categories').upsert(catPayload);
+        const { error: catErr } = await supabase.from('categories').upsert(catPayload);
+        if (catErr) {
+          throw new Error(`Error en categorías: ${catErr.message}`);
+        }
 
         // Seed products
         const prodPayload = seeded.products.map((p) => ({
@@ -424,9 +525,13 @@ export const supabaseService = {
           created_at: new Date(p.createdAt).toISOString(),
           updated_at: new Date(p.updatedAt).toISOString(),
         }));
-        await supabase.from('products').upsert(prodPayload);
-      } catch (err) {
-        console.warn('Supabase cloud seeding error:', err);
+        const { error: prodErr } = await supabase.from('products').upsert(prodPayload);
+        if (prodErr) {
+          throw new Error(`Error en productos: ${prodErr.message}`);
+        }
+      } catch (err: any) {
+        console.error('Supabase cloud seeding error:', err);
+        throw err;
       }
     }
 

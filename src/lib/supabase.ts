@@ -6,6 +6,30 @@ import { SEED_CATEGORIES, SEED_PRODUCTS } from '../data/seedData.ts';
 // Local storage fallback keys
 const LOCAL_PRODUCTS_KEY = 'rich_pro_products_cache';
 const LOCAL_CATEGORIES_KEY = 'rich_pro_categories_cache';
+const LOCAL_BEST_SELLERS_KEY = 'rich_pro_best_sellers_ids';
+
+export const getLocalBestSellerIds = (): string[] => {
+  try {
+    const raw = localStorage.getItem(LOCAL_BEST_SELLERS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Error reading local best sellers cache:', e);
+  }
+  return [];
+};
+
+export const setLocalBestSellerIds = (ids: string[]) => {
+  try {
+    localStorage.setItem(LOCAL_BEST_SELLERS_KEY, JSON.stringify(ids));
+  } catch (e) {
+    console.warn('Error saving local best sellers cache:', e);
+  }
+};
 const LOCAL_ADMIN_AUTH_KEY = 'rich_pro_admin_session';
 
 // Check if valid Supabase credentials exist
@@ -215,6 +239,63 @@ export const supabaseService = {
       return seeded.categories;
     }
     return local;
+  },
+
+  // Fetch Best Seller IDs (Hero Showcase)
+  async fetchBestSellerIds(): Promise<string[]> {
+    if (supabase && isSupabaseConfigured) {
+      try {
+        const { data, error } = await supabase
+          .from('settings')
+          .select('value')
+          .eq('key', 'best_seller_ids')
+          .maybeSingle();
+
+        if (!error && data?.value) {
+          let ids: string[] = [];
+          if (Array.isArray(data.value)) {
+            ids = data.value;
+          } else if (typeof data.value === 'string') {
+            ids = JSON.parse(data.value);
+          }
+          if (ids.length > 0) {
+            setLocalBestSellerIds(ids);
+            return ids;
+          }
+        }
+      } catch (err) {
+        // Fallback silently to local cache if settings table doesn't exist
+      }
+    }
+
+    return getLocalBestSellerIds();
+  },
+
+  getLocalBestSellerIds(): string[] {
+    return getLocalBestSellerIds();
+  },
+
+  setLocalBestSellerIds(ids: string[]): void {
+    setLocalBestSellerIds(ids);
+  },
+
+  // Save Best Seller IDs (Hero Showcase)
+  async saveBestSellerIds(ids: string[]): Promise<string[]> {
+    setLocalBestSellerIds(ids);
+
+    if (supabase && isSupabaseConfigured) {
+      try {
+        await supabase.from('settings').upsert({
+          key: 'best_seller_ids',
+          value: JSON.stringify(ids),
+          updated_at: new Date().toISOString(),
+        });
+      } catch (err) {
+        console.warn('Notice saving best sellers to Supabase settings:', err);
+      }
+    }
+
+    return ids;
   },
 
   // Test Supabase Cloud Tables Connection
@@ -573,21 +654,32 @@ CREATE TABLE IF NOT EXISTS public.products (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 3. Habilitar Seguridad por Filas (RLS) y Políticas de Acceso Público de Lectura
+-- 3. Tabla de Configuraciones Globales (Cuentas Más Vendidas fijas, etc.)
+CREATE TABLE IF NOT EXISTS public.settings (
+  key TEXT PRIMARY KEY,
+  value JSONB,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 4. Habilitar Seguridad por Filas (RLS) y Políticas de Acceso Público de Lectura
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
 
 -- Permitir lectura a todo el público (anónimo y autenticado)
 CREATE POLICY "Public Read Categories" ON public.categories FOR SELECT USING (true);
 CREATE POLICY "Public Read Products" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Public Read Settings" ON public.settings FOR SELECT USING (true);
 
 -- Permitir escrituras a usuarios autenticados / service role
 CREATE POLICY "Admin All Categories" ON public.categories FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Admin All Products" ON public.products FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Admin All Settings" ON public.settings FOR ALL USING (true) WITH CHECK (true);
 
--- Habilitar Realtime para ambas tablas
+-- Habilitar Realtime para las tablas
 ALTER PUBLICATION supabase_realtime ADD TABLE public.categories;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.products;
+ALTER PUBLICATION supabase_realtime ADD TABLE public.settings;
 `;
   },
 };

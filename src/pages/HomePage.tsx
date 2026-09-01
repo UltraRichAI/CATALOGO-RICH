@@ -26,6 +26,7 @@ import { getGeneralWhatsAppUrl } from '../utils/whatsapp.ts';
 interface HomePageProps {
   products: Product[];
   categories: Category[];
+  bestSellerIds?: string[];
   isLoading: boolean;
   onNavigate: (route: string) => void;
 }
@@ -33,6 +34,7 @@ interface HomePageProps {
 export const HomePage: React.FC<HomePageProps> = ({
   products,
   categories,
+  bestSellerIds = [],
   isLoading,
   onNavigate,
 }) => {
@@ -40,16 +42,27 @@ export const HomePage: React.FC<HomePageProps> = ({
     `Hola ${APP_CONFIG.storeName}, deseo consultar sobre los productos destacados de su catálogo.`
   );
 
-  const featuredProducts = products.filter((p) => p.active && p.featured);
   const activeProducts = products.filter((p) => p.active);
   const activeCategories = categories.filter((c) => c.active);
+  const featuredProducts = products.filter((p) => p.active && p.featured);
 
-  // Showcase up to 2 active products dynamically (prioritize featured, then first available)
-  const showcaseProducts = (
-    featuredProducts.length >= 2
-      ? featuredProducts.slice(0, 2)
-      : activeProducts.slice(0, 2)
-  );
+  // 1. Strictly resolve configured Best Seller Accounts ("CUENTAS MÁS VENDIDAS")
+  // They stay STATIC and will NOT change or shift when new products are added to the catalog.
+  let showcaseProducts: Product[] = [];
+  if (bestSellerIds && bestSellerIds.length > 0) {
+    const matched = bestSellerIds
+      .map((id) => products.find((p) => p.id === id))
+      .filter((p): p is Product => Boolean(p && p.active));
+    if (matched.length > 0) {
+      showcaseProducts = matched.slice(0, 2);
+    }
+  }
+
+  // Fallback if not configured yet
+  if (showcaseProducts.length === 0) {
+    const featured = products.filter((p) => p.active && p.featured);
+    showcaseProducts = featured.length >= 2 ? featured.slice(0, 2) : activeProducts.slice(0, 2);
+  }
 
   const minPrice = activeProducts.length > 0
     ? Math.min(...activeProducts.map((p) => p.price))

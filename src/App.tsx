@@ -16,6 +16,9 @@ import { AdminPage } from './pages/AdminPage.tsx';
 export default function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [bestSellerIds, setBestSellerIds] = useState<string[]>(() => {
+    return supabaseService.getLocalBestSellerIds();
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [adminUser, setAdminUser] = useState<any>(() => {
     try {
@@ -49,12 +52,19 @@ export default function App() {
   // Load Data from Supabase / Local Storage
   const loadData = useCallback(async () => {
     try {
-      const [prods, cats] = await Promise.all([
+      const [prods, cats, bestIds] = await Promise.all([
         supabaseService.fetchProducts(),
         supabaseService.fetchCategories(),
+        supabaseService.fetchBestSellerIds(),
       ]);
       setProducts(prods);
       setCategories(cats);
+      if (bestIds && Array.isArray(bestIds) && bestIds.length > 0) {
+        setBestSellerIds(bestIds);
+      } else {
+        // Fallback to local cache or sync
+        setBestSellerIds(supabaseService.getLocalBestSellerIds());
+      }
     } catch (err) {
       console.error('Error loading Supabase catalog data:', err);
     } finally {
@@ -116,6 +126,7 @@ export default function App() {
         <AdminPage
           products={products}
           categories={categories}
+          bestSellerIds={bestSellerIds}
           isLoadingData={isLoading}
           onNavigate={navigate}
           onDataChanged={loadData}
@@ -170,6 +181,7 @@ export default function App() {
       <HomePage
         products={products}
         categories={categories}
+        bestSellerIds={bestSellerIds}
         isLoading={isLoading}
         onNavigate={navigate}
       />

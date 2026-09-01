@@ -28,6 +28,10 @@ import {
   Upload,
   Image as ImageIcon,
   RefreshCw,
+  Flame,
+  ArrowLeftRight,
+  Star,
+  Eye,
 } from 'lucide-react';
 import { supabase, supabaseService, isSupabaseConfigured, generateId } from '../lib/supabase.ts';
 import type { Product, Category } from '../types/index.ts';
@@ -39,6 +43,7 @@ import { APP_CONFIG } from '../config/index.ts';
 interface AdminPageProps {
   products: Product[];
   categories: Category[];
+  bestSellerIds?: string[];
   isLoadingData: boolean;
   onNavigate: (route: string) => void;
   onDataChanged: () => Promise<void>;
@@ -49,6 +54,7 @@ interface AdminPageProps {
 export const AdminPage: React.FC<AdminPageProps> = ({
   products,
   categories,
+  bestSellerIds = [],
   isLoadingData,
   onNavigate,
   onDataChanged,
@@ -65,6 +71,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
   // Tab navigation
   const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'supabase'>('products');
+
+  // Best Sellers (Hero Showcase) Modal State
+  const [isBestSellersModalOpen, setIsBestSellersModalOpen] = useState(false);
+  const [selectedBestSeller1, setSelectedBestSeller1] = useState<string>('');
+  const [selectedBestSeller2, setSelectedBestSeller2] = useState<string>('');
+  const [isSavingBestSellers, setIsSavingBestSellers] = useState(false);
 
   // Cloud Diagnostics State
   const [cloudStatus, setCloudStatus] = useState<{
@@ -173,6 +185,59 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       showToast('Error al guardar en Supabase: ' + (err.message || ''), 'error');
     } finally {
       setIsSyncingAll(false);
+    }
+  };
+
+  // ----------------------------------------------------
+  // BEST SELLERS (HERO SHOWCASE) HANDLERS
+  // ----------------------------------------------------
+  const openBestSellersModal = () => {
+    const current1 = bestSellerIds[0] || products[0]?.id || '';
+    const current2 = bestSellerIds[1] || products[1]?.id || products[0]?.id || '';
+    setSelectedBestSeller1(current1);
+    setSelectedBestSeller2(current2);
+    setIsBestSellersModalOpen(true);
+  };
+
+  const handleSwapBestSellers = () => {
+    setSelectedBestSeller1((prev1) => {
+      const prev2 = selectedBestSeller2;
+      setSelectedBestSeller2(prev1);
+      return prev2;
+    });
+  };
+
+  const handleSaveBestSellers = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedBestSeller1 || !selectedBestSeller2) {
+      showToast('Por favor selecciona los 2 productos para las Cuentas Más Vendidas', 'error');
+      return;
+    }
+    setIsSavingBestSellers(true);
+    try {
+      await supabaseService.saveBestSellerIds([selectedBestSeller1, selectedBestSeller2]);
+      await onDataChanged();
+      setIsBestSellersModalOpen(false);
+      showToast('¡Las 2 Cuentas Más Vendidas fueron fijadas exitosamente en la portada!', 'success');
+    } catch (err: any) {
+      console.error('Error al guardar cuentas más vendidas:', err);
+      showToast('Error al guardar selección: ' + (err?.message || ''), 'error');
+    } finally {
+      setIsSavingBestSellers(false);
+    }
+  };
+
+  const handleSetDirectBestSeller = async (productId: string, slot: 1 | 2) => {
+    try {
+      const current1 = bestSellerIds[0] || products[0]?.id || '';
+      const current2 = bestSellerIds[1] || products[1]?.id || products[0]?.id || '';
+      const newIds = slot === 1 ? [productId, current2] : [current1, productId];
+      await supabaseService.saveBestSellerIds(newIds);
+      await onDataChanged();
+      showToast(`¡Fijado como Top ${slot} de Cuentas Más Vendidas en la portada!`, 'success');
+    } catch (err: any) {
+      console.error('Error al fijar cuenta:', err);
+      showToast('Error al asignar: ' + (err?.message || ''), 'error');
     }
   };
 
@@ -865,6 +930,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
               <button
                 type="button"
+                id="btn-manage-best-sellers"
+                onClick={openBestSellersModal}
+                className="px-3.5 py-2.5 bg-gradient-to-r from-amber-500 via-rose-500 to-amber-600 hover:from-amber-600 hover:to-rose-700 text-white text-xs font-black rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm shrink-0 cursor-pointer flex-1 sm:flex-initial"
+                title="Configurar las 2 cuentas estáticas de la sección Cuentas Más Vendidas en la portada"
+              >
+                <Flame className="w-4 h-4 fill-current text-amber-200" />
+                <span>Elegir 2 Más Vendidas (Hero)</span>
+              </button>
+
+              <button
+                type="button"
                 id="btn-create-product-modal"
                 onClick={openCreateProductModal}
                 className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 cursor-pointer flex-1 sm:flex-initial"
@@ -885,6 +961,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                     <th className="px-4 py-3.5">Categoría & Duración</th>
                     <th className="px-4 py-3.5">Precio</th>
                     <th className="px-4 py-3.5">Precio Regular</th>
+                    <th className="px-4 py-3.5 text-center">Hero Portada</th>
                     <th className="px-4 py-3.5 text-center">Destacado</th>
                     <th className="px-4 py-3.5 text-center">Estado</th>
                     <th className="px-4 py-3.5 text-right">Acciones</th>
@@ -893,50 +970,96 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                 <tbody className="divide-y divide-slate-100">
                   {filteredAdminProducts.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-center py-10 text-slate-400">
+                      <td colSpan={8} className="text-center py-10 text-slate-400">
                         No hay productos registrados con este criterio.
                       </td>
                     </tr>
                   ) : (
-                    filteredAdminProducts.map((p) => (
-                      <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
-                        <td className="px-4 py-3 flex items-center gap-3">
-                          <img
-                            src={p.imageUrl}
-                            alt={p.name}
-                            className="w-10 h-10 rounded-lg object-cover bg-slate-100 border border-slate-200 shrink-0"
-                            referrerPolicy="no-referrer"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src =
-                                'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=300&q=80';
-                            }}
-                          />
-                          <div className="min-w-0">
-                            <div className="font-bold text-slate-900 truncate max-w-[240px]">{p.name}</div>
-                            <div className="text-[11px] text-slate-400 truncate max-w-[240px]">{p.description}</div>
-                            {p.badge && (
-                              <span className="inline-block px-1.5 py-0.5 bg-emerald-50 text-emerald-700 text-[9px] font-extrabold rounded mt-0.5">
-                                {p.badge}
-                              </span>
-                            )}
-                          </div>
-                        </td>
+                    filteredAdminProducts.map((p) => {
+                      const isTop1 = bestSellerIds[0] === p.id;
+                      const isTop2 = bestSellerIds[1] === p.id;
 
-                        <td className="px-4 py-3">
-                          <div className="font-semibold text-slate-800">{p.category || 'Sin categoría'}</div>
-                          <div className="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-0.5">
-                            <Clock className="w-3 h-3" />
-                            <span>{p.duration || '18 Meses'}</span>
-                          </div>
-                        </td>
+                      return (
+                        <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="px-4 py-3 flex items-center gap-3">
+                            <img
+                              src={p.imageUrl}
+                              alt={p.name}
+                              className="w-10 h-10 rounded-lg object-cover bg-slate-100 border border-slate-200 shrink-0"
+                              referrerPolicy="no-referrer"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src =
+                                  'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=300&q=80';
+                              }}
+                            />
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-bold text-slate-900 truncate max-w-[200px]">{p.name}</span>
+                                {isTop1 && (
+                                  <span className="shrink-0 inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-rose-500 text-white text-[9px] font-black rounded uppercase">
+                                    <Flame className="w-2.5 h-2.5 fill-current" /> Top 1 Hero
+                                  </span>
+                                )}
+                                {isTop2 && (
+                                  <span className="shrink-0 inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-amber-500 text-white text-[9px] font-black rounded uppercase">
+                                    <Flame className="w-2.5 h-2.5 fill-current" /> Top 2 Hero
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[11px] text-slate-400 truncate max-w-[240px]">{p.description}</div>
+                              {p.badge && (
+                                <span className="inline-block px-1.5 py-0.5 bg-emerald-50 text-emerald-700 text-[9px] font-extrabold rounded mt-0.5">
+                                  {p.badge}
+                                </span>
+                              )}
+                            </div>
+                          </td>
 
-                        <td className="px-4 py-3 font-extrabold text-emerald-700 text-sm">
-                          {formatCurrency(p.price)}
-                        </td>
+                          <td className="px-4 py-3">
+                            <div className="font-semibold text-slate-800">{p.category || 'Sin categoría'}</div>
+                            <div className="text-[11px] text-emerald-600 font-bold flex items-center gap-1 mt-0.5">
+                              <Clock className="w-3 h-3" />
+                              <span>{p.duration || '18 Meses'}</span>
+                            </div>
+                          </td>
 
-                        <td className="px-4 py-3 text-slate-400 line-through">
-                          {p.comparePrice ? formatCurrency(p.comparePrice) : '-'}
-                        </td>
+                          <td className="px-4 py-3 font-extrabold text-emerald-700 text-sm">
+                            {formatCurrency(p.price)}
+                          </td>
+
+                          <td className="px-4 py-3 text-slate-400 line-through">
+                            {p.comparePrice ? formatCurrency(p.comparePrice) : '-'}
+                          </td>
+
+                          {/* Hero Best Seller Slot Actions */}
+                          <td className="px-4 py-3 text-center">
+                            <div className="inline-flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => handleSetDirectBestSeller(p.id, 1)}
+                                className={`px-2 py-1 rounded-md text-[10px] font-black transition-all cursor-pointer ${
+                                  isTop1
+                                    ? 'bg-rose-600 text-white shadow-2xs'
+                                    : 'bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700'
+                                }`}
+                                title="Fijar como Cuenta Más Vendida #1 (Izquierda)"
+                              >
+                                {isTop1 ? '✓ Top 1' : 'Top 1'}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleSetDirectBestSeller(p.id, 2)}
+                                className={`px-2 py-1 rounded-md text-[10px] font-black transition-all cursor-pointer ${
+                                  isTop2
+                                    ? 'bg-amber-600 text-white shadow-2xs'
+                                    : 'bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-700'
+                                }`}
+                                title="Fijar como Cuenta Más Vendida #2 (Derecha)"
+                              >
+                                {isTop2 ? '✓ Top 2' : 'Top 2'}
+                              </button>
+                            </div>
+                          </td>
 
                         <td className="px-4 py-3 text-center">
                           <button
@@ -994,8 +1117,9 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                           </div>
                         </td>
                       </tr>
-                    ))
-                  )}
+                    );
+                  })
+                )}
                 </tbody>
               </table>
             </div>
@@ -1488,6 +1612,273 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-sm cursor-pointer"
                 >
                   {editingProduct ? 'Guardar Cambios' : 'Crear Cuenta'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ------------------------------------------------ */}
+      {/* BEST SELLERS (HERO SHOWCASE) CONFIG MODAL */}
+      {/* ------------------------------------------------ */}
+      {isBestSellersModalOpen && (
+        <div
+          id="best-sellers-modal-backdrop"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs overflow-y-auto"
+          onClick={() => setIsBestSellersModalOpen(false)}
+        >
+          <div
+            id="best-sellers-modal-box"
+            className="bg-white rounded-3xl max-w-3xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6 my-8 animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-black uppercase tracking-wider">
+                  <Flame className="w-3 h-3 fill-current text-amber-500" />
+                  Hero Showcase Fijo
+                </div>
+                <h3 className="font-extrabold text-slate-900 text-xl flex items-center gap-2">
+                  Configurar 2 Cuentas Más Vendidas
+                </h3>
+                <p className="text-xs text-slate-500 max-w-xl">
+                  Estas 2 cuentas permanecerán <strong>estáticas y fijas</strong> en la sección principal de la portada. 
+                  Cuando agregues nuevos productos al catálogo, esta sección no se moverá.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsBestSellersModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700 p-1.5 rounded-xl hover:bg-slate-100 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveBestSellers} className="space-y-6">
+              {/* Product Selectors Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+                {/* Slot 1: Position Left */}
+                <div className="p-4 rounded-2xl bg-slate-50 border-2 border-rose-200 space-y-3 relative">
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-600 text-white text-[10px] font-black rounded-md uppercase tracking-wider">
+                      <Flame className="w-3 h-3 fill-current" /> Posición #1 (Izquierda)
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400">Principal</span>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 text-xs mb-1.5">
+                      Selecciona la Cuenta #1:
+                    </label>
+                    <select
+                      value={selectedBestSeller1}
+                      onChange={(e) => setSelectedBestSeller1(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    >
+                      <option value="">-- Elige una cuenta --</option>
+                      {products.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} — {formatCurrency(p.price)} ({p.category || 'General'})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Preview Card Slot 1 */}
+                  {(() => {
+                    const prod1 = products.find((p) => p.id === selectedBestSeller1);
+                    if (!prod1) {
+                      return (
+                        <div className="p-4 border border-dashed border-slate-300 rounded-xl text-center text-xs text-slate-400">
+                          Selecciona un producto arriba para ver su ficha
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs flex items-center gap-3">
+                        <img
+                          src={prod1.imageUrl}
+                          alt={prod1.name}
+                          className="w-12 h-12 rounded-lg object-cover bg-slate-100 border border-slate-200 shrink-0"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="font-bold text-slate-900 text-xs truncate">{prod1.name}</div>
+                          <div className="text-[10px] text-slate-400 truncate">{prod1.category} · {prod1.duration}</div>
+                          <div className="text-xs font-black text-rose-600 mt-0.5">{formatCurrency(prod1.price)}</div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Swap Button (Floating Center on Desktop) */}
+                <div className="flex md:hidden items-center justify-center -my-2 z-10">
+                  <button
+                    type="button"
+                    onClick={handleSwapBestSellers}
+                    className="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-full shadow-sm flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <ArrowLeftRight className="w-3.5 h-3.5" />
+                    <span>Intercambiar Posiciones</span>
+                  </button>
+                </div>
+
+                {/* Slot 2: Position Right */}
+                <div className="p-4 rounded-2xl bg-slate-50 border-2 border-amber-200 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500 text-white text-[10px] font-black rounded-md uppercase tracking-wider">
+                      <Flame className="w-3 h-3 fill-current" /> Posición #2 (Derecha)
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400">Secundaria</span>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 text-xs mb-1.5">
+                      Selecciona la Cuenta #2:
+                    </label>
+                    <select
+                      value={selectedBestSeller2}
+                      onChange={(e) => setSelectedBestSeller2(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    >
+                      <option value="">-- Elige una cuenta --</option>
+                      {products.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} — {formatCurrency(p.price)} ({p.category || 'General'})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Preview Card Slot 2 */}
+                  {(() => {
+                    const prod2 = products.find((p) => p.id === selectedBestSeller2);
+                    if (!prod2) {
+                      return (
+                        <div className="p-4 border border-dashed border-slate-300 rounded-xl text-center text-xs text-slate-400">
+                          Selecciona un producto arriba para ver su ficha
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs flex items-center gap-3">
+                        <img
+                          src={prod2.imageUrl}
+                          alt={prod2.name}
+                          className="w-12 h-12 rounded-lg object-cover bg-slate-100 border border-slate-200 shrink-0"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="font-bold text-slate-900 text-xs truncate">{prod2.name}</div>
+                          <div className="text-[10px] text-slate-400 truncate">{prod2.category} · {prod2.duration}</div>
+                          <div className="text-xs font-black text-amber-600 mt-0.5">{formatCurrency(prod2.price)}</div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Desktop Swap Button */}
+              <div className="hidden md:flex justify-center">
+                <button
+                  type="button"
+                  onClick={handleSwapBestSellers}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 flex items-center gap-2 cursor-pointer transition-colors shadow-2xs"
+                >
+                  <ArrowLeftRight className="w-4 h-4 text-emerald-600" />
+                  <span>Intercambiar Cuenta #1 y Cuenta #2</span>
+                </button>
+              </div>
+
+              {/* Live Showcase Preview Block */}
+              <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-3">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                    <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                    Vista Previa en Portada (Hero Showcase)
+                  </span>
+                  <span className="text-emerald-400 font-bold">100% Estático & Fijo</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {[selectedBestSeller1, selectedBestSeller2].map((id, index) => {
+                    const prod = products.find((p) => p.id === id);
+                    if (!prod) {
+                      return (
+                        <div
+                          key={index}
+                          className="p-4 rounded-xl border border-dashed border-slate-700 bg-slate-800/50 text-slate-400 text-xs flex items-center justify-center min-h-[100px]"
+                        >
+                          Posición #{index + 1} no seleccionada
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={index}
+                        className="p-3.5 rounded-xl bg-slate-800/90 border border-slate-700/80 flex items-center gap-3"
+                      >
+                        <img
+                          src={prod.imageUrl}
+                          alt={prod.name}
+                          className="w-12 h-12 rounded-lg object-cover bg-slate-700 shrink-0"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-bold text-white text-xs truncate">{prod.name}</span>
+                            <span className={`px-1.5 py-0.2 rounded text-[8px] font-black uppercase text-white ${
+                              index === 0 ? 'bg-rose-500' : 'bg-amber-500'
+                            }`}>
+                              Top {index + 1}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-slate-400 truncate mt-0.5">{prod.description}</div>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="text-emerald-400 font-black text-xs">
+                              {formatCurrency(prod.price)}
+                            </span>
+                            <span className="text-[9px] text-slate-400 font-semibold">{prod.duration}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsBestSellersModalOpen(false)}
+                  disabled={isSavingBestSellers}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition-colors cursor-pointer text-xs"
+                >
+                  Cancelar
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isSavingBestSellers || !selectedBestSeller1 || !selectedBestSeller2}
+                  className="px-6 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-xl transition-all shadow-sm cursor-pointer text-xs flex items-center gap-2 disabled:opacity-50"
+                >
+                  {isSavingBestSellers ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Fijando Cuentas...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      <span>Guardar & Fijar en Portada</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

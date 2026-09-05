@@ -88,25 +88,25 @@ export const HomePage: React.FC<HomePageProps> = ({
   return (
     <div id="home-page-container" className="space-y-12 sm:space-y-16 pb-16">
       {/* Eye-catching Announcement Top Bar */}
-      <div className="bg-gradient-to-r from-emerald-600 via-slate-900 to-emerald-700 text-white px-4 py-2.5 shadow-md">
+      <div className="bg-gradient-to-r from-violet-950/90 via-[#0e0e18] to-violet-950/90 border-b border-violet-500/20 text-white px-4 py-2.5 shadow-md">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2 font-bold tracking-wide text-center sm:text-left">
             <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-300"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-300"></span>
             </span>
-            <span className="inline-flex items-center gap-1 text-amber-300 font-extrabold uppercase">
+            <span className="inline-flex items-center gap-1 text-violet-300 font-extrabold uppercase">
               <Flame className="w-3.5 h-3.5 fill-current" />
               OFERTA ESTRELLA:
             </span>
             <span>
               {showcaseProducts.length >= 2 ? (
                 <>
-                  {showcaseProducts[0].name} a solo <strong className="text-emerald-300 underline underline-offset-2">{APP_CONFIG.currencySymbol} {showcaseProducts[0].price.toFixed(2)}</strong> y {showcaseProducts[1].name} a <strong className="text-emerald-300">{APP_CONFIG.currencySymbol} {showcaseProducts[1].price.toFixed(2)}</strong> con activación inmediata.
+                  {showcaseProducts[0].name} a solo <strong className="text-violet-300 underline underline-offset-2">{APP_CONFIG.currencySymbol} {showcaseProducts[0].price.toFixed(2)}</strong> y {showcaseProducts[1].name} a <strong className="text-violet-300">{APP_CONFIG.currencySymbol} {showcaseProducts[1].price.toFixed(2)}</strong> con activación inmediata.
                 </>
               ) : showcaseProducts.length === 1 ? (
                 <>
-                  {showcaseProducts[0].name} a solo <strong className="text-emerald-300 underline underline-offset-2">{APP_CONFIG.currencySymbol} {showcaseProducts[0].price.toFixed(2)}</strong> con activación inmediata a tu correo.
+                  {showcaseProducts[0].name} a solo <strong className="text-violet-300 underline underline-offset-2">{APP_CONFIG.currencySymbol} {showcaseProducts[0].price.toFixed(2)}</strong> con activación inmediata a tu correo.
                 </>
               ) : (
                 <>
@@ -120,9 +120,9 @@ export const HomePage: React.FC<HomePageProps> = ({
             href={waUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 inline-flex items-center gap-1.5 font-extrabold text-[11px] bg-white text-slate-950 hover:bg-emerald-100 px-3 py-1 rounded-full transition-colors shadow-xs uppercase tracking-wider"
+            className="shrink-0 inline-flex items-center gap-1.5 font-extrabold text-[11px] bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white border border-violet-400/30 px-3 py-1 rounded-full transition-all shadow-[0_0_12px_rgba(139,92,246,0.3)] uppercase tracking-wider"
           >
-            <MessageCircle className="w-3 h-3 text-emerald-600 fill-current" />
+            <MessageCircle className="w-3 h-3 text-white fill-current" />
             <span>Pedir por WhatsApp</span>
           </a>
         </div>
@@ -131,36 +131,40 @@ export const HomePage: React.FC<HomePageProps> = ({
       {/* Hero Section - Geometric Balance & Rich Product Showcase */}
       <section
         id="home-hero-section"
-        className="bg-white border-b border-slate-200/80 py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8"
+        className="relative overflow-hidden bg-[#0a0b12]/90 border-b border-white/10 py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8"
       >
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        {/* Subtle Ambient Radial Glow */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center relative z-10">
           {/* Left Text Block */}
           <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-xs font-bold rounded-full uppercase tracking-wider shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-violet-950/60 border border-violet-500/30 text-violet-300 text-xs font-bold rounded-full uppercase tracking-wider shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-violet-400" />
               <span>RICH PRO • CUENTAS & SUSCRIPCIONES DIGITALES</span>
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-[1.15] tracking-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.15] tracking-tight">
                 {heroTitle}
               </h1>
-              <p className="text-base sm:text-lg font-bold text-emerald-700 line-clamp-2">
+              <p className="text-base sm:text-lg font-bold text-violet-400 line-clamp-2">
                 {heroSubtitle}
               </p>
             </div>
 
-            <p className="text-slate-600 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
+            <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
               Herramientas premium de diseño, productividad e inteligencia artificial para estudiantes, creadores y profesionales. Accede a funciones avanzadas y ahorra dinero.
             </p>
 
             {/* University & Instant Activation Highlight Banner */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50/70 to-emerald-50 border border-emerald-200 text-left space-y-1.5 shadow-2xs max-w-xl mx-auto lg:mx-0">
-              <div className="flex items-center gap-2 text-emerald-900 font-black text-xs sm:text-sm uppercase tracking-wider">
-                <GraduationCap className="w-4 h-4 text-emerald-700" />
+            <div className="p-4 rounded-2xl bg-gradient-to-r from-violet-950/60 via-indigo-950/40 to-violet-950/60 border border-violet-500/30 text-left space-y-1.5 shadow-2xs max-w-xl mx-auto lg:mx-0">
+              <div className="flex items-center gap-2 text-violet-200 font-black text-xs sm:text-sm uppercase tracking-wider">
+                <GraduationCap className="w-4 h-4 text-violet-400" />
                 <span>🎓 PRECIOS ESPECIALES & GARANTÍA TOTAL</span>
               </div>
-              <p className="text-xs sm:text-sm text-emerald-800 font-bold leading-relaxed">
+              <p className="text-xs sm:text-sm text-violet-300 font-bold leading-relaxed">
                 {heroOfferText}
               </p>
             </div>
@@ -170,7 +174,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 type="button"
                 id="hero-btn-catalog"
                 onClick={() => onNavigate('/productos')}
-                className="w-full sm:w-auto px-7 py-3.5 sm:px-8 sm:py-4 bg-slate-900 hover:bg-slate-800 text-white font-black tracking-wider uppercase text-xs sm:text-sm rounded-xl shadow-lg shadow-slate-200 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                className="w-full sm:w-auto px-7 py-3.5 sm:px-8 sm:py-4 bg-white/10 hover:bg-white/15 text-white font-black tracking-wider uppercase text-xs sm:text-sm rounded-xl border border-white/15 hover:border-violet-400/50 shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               >
                 <span>VER CATÁLOGO</span>
                 <ArrowRight className="w-4 h-4" />
@@ -181,7 +185,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 href={waUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-7 py-3.5 sm:px-8 sm:py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black tracking-wider uppercase text-xs sm:text-sm rounded-xl shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2 active:scale-95"
+                className="w-full sm:w-auto px-7 py-3.5 sm:px-8 sm:py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black tracking-wider uppercase text-xs sm:text-sm rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-violet-400/40 transition-all flex items-center justify-center gap-2 active:scale-95"
               >
                 <MessageCircle className="w-5 h-5 fill-current" />
                 <span>COMPRAR POR WHATSAPP</span>
@@ -189,26 +193,26 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
 
             {/* Quick Metrics */}
-            <div className="pt-4 grid grid-cols-3 gap-3 border-t border-slate-100 max-w-md mx-auto lg:mx-0 text-left">
+            <div className="pt-4 grid grid-cols-3 gap-3 border-t border-white/10 max-w-md mx-auto lg:mx-0 text-left">
               <div>
-                <div className="text-xl sm:text-2xl font-black text-emerald-600">
+                <div className="text-xl sm:text-2xl font-black text-violet-400">
                   {APP_CONFIG.currencySymbol} {minPrice.toFixed(2)}
                 </div>
-                <div className="text-[11px] text-slate-500 font-bold">Desde / Mejor Precio</div>
+                <div className="text-[11px] text-slate-400 font-bold">Desde / Mejor Precio</div>
               </div>
               <div>
-                <div className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-1">
+                <div className="text-xl sm:text-2xl font-black text-white flex items-center gap-1">
                   <span>5 Min</span>
-                  <Zap className="w-4 h-4 text-amber-500 fill-current" />
+                  <Zap className="w-4 h-4 text-amber-400 fill-current" />
                 </div>
-                <div className="text-[11px] text-slate-500 font-bold">Activación Rápida</div>
+                <div className="text-[11px] text-slate-400 font-bold">Activación Rápida</div>
               </div>
               <div>
-                <div className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-1">
+                <div className="text-xl sm:text-2xl font-black text-white flex items-center gap-1">
                   <span>100%</span>
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <ShieldCheck className="w-4 h-4 text-violet-400" />
                 </div>
-                <div className="text-[11px] text-slate-500 font-bold">Garantía Total</div>
+                <div className="text-[11px] text-slate-400 font-bold">Garantía Total</div>
               </div>
             </div>
           </div>
@@ -218,38 +222,38 @@ export const HomePage: React.FC<HomePageProps> = ({
             <div className="w-full max-w-lg space-y-4">
               {/* Header Badge */}
               <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-1.5 text-xs font-black text-slate-800 uppercase tracking-wider">
+                <div className="flex items-center gap-1.5 text-xs font-black text-white uppercase tracking-wider">
                   <Flame className="w-4 h-4 text-rose-500 fill-current" />
                   <span>{showcaseProducts.length === 1 ? 'Cuenta Destacada' : 'Cuentas Más Vendidas'}</span>
                 </div>
-                <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                <span className="text-[11px] font-bold text-violet-300 bg-violet-950/60 px-2.5 py-0.5 rounded-full border border-violet-500/30">
                   Activación Inmediata
                 </span>
               </div>
 
               {/* Dynamic Showcase Cards Grid */}
               {showcaseProducts.length === 1 ? (
-                /* SINGLE PRODUCT: Elegant compact card, no awkward giant square */
+                /* SINGLE PRODUCT: Elegant compact card */
                 <div
                   onClick={() => onNavigate(`/productos/${showcaseProducts[0].id}`)}
-                  className="group relative bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-2xl hover:border-emerald-500/60 transition-all duration-300 cursor-pointer flex flex-col max-w-md mx-auto w-full"
+                  className="group relative bg-[#11121c]/95 rounded-2xl overflow-hidden border border-white/10 shadow-2xl hover:border-violet-500/50 hover:shadow-[0_0_30px_rgba(139,92,246,0.2)] transition-all duration-300 cursor-pointer flex flex-col max-w-md mx-auto w-full"
                 >
                   {/* Top Badges */}
                   <div className="absolute top-3 left-3 z-20 flex flex-wrap gap-1.5 pointer-events-none">
-                    <span className="inline-flex items-center gap-1 bg-emerald-500 text-slate-950 text-[11px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
+                    <span className="inline-flex items-center gap-1 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider shadow-sm border border-violet-400/30">
                       <Sparkles className="w-3.5 h-3.5 fill-current" />
                       {showcaseProducts[0].badge || (showcaseProducts[0].duration ? `${showcaseProducts[0].duration}` : 'CUENTA PRO')}
                     </span>
                     {showcaseProducts[0].duration && (
-                      <span className="inline-flex items-center gap-1 bg-slate-800/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md border border-slate-700">
-                        <Clock className="w-3 h-3 text-emerald-400" />
+                      <span className="inline-flex items-center gap-1 bg-black/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-md border border-white/10">
+                        <Clock className="w-3 h-3 text-violet-400" />
                         {showcaseProducts[0].duration}
                       </span>
                     )}
                   </div>
 
                   {/* Image Presentation */}
-                  <div className="relative w-full h-64 sm:h-72 bg-slate-950 overflow-hidden flex items-center justify-center p-4">
+                  <div className="relative w-full h-64 sm:h-72 bg-[#08080d] overflow-hidden flex items-center justify-center p-4">
                     <img
                       src={showcaseProducts[0].imageUrl}
                       alt={showcaseProducts[0].name}
@@ -266,17 +270,17 @@ export const HomePage: React.FC<HomePageProps> = ({
                   </div>
 
                   {/* Card Bottom Details */}
-                  <div className="p-4 bg-slate-900/95 border-t border-slate-800 space-y-2">
+                  <div className="p-4 bg-[#0e0f19] border-t border-white/10 space-y-2">
                     <div className="flex items-center justify-between gap-3">
-                      <h4 className="font-extrabold text-base text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
+                      <h4 className="font-extrabold text-base text-white group-hover:text-violet-300 transition-colors line-clamp-1">
                         {showcaseProducts[0].name}
                       </h4>
                       <div className="text-right shrink-0">
-                        <span className="text-base font-black text-emerald-400">
+                        <span className="text-base font-black text-violet-400">
                           {APP_CONFIG.currencySymbol} {showcaseProducts[0].price.toFixed(2)}
                         </span>
                         {showcaseProducts[0].comparePrice && showcaseProducts[0].comparePrice > showcaseProducts[0].price && (
-                          <span className="text-xs text-slate-400 line-through ml-2">
+                          <span className="text-xs text-slate-500 line-through ml-2">
                             {APP_CONFIG.currencySymbol} {showcaseProducts[0].comparePrice.toFixed(0)}
                           </span>
                         )}
@@ -285,7 +289,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <p className="text-xs text-slate-400 line-clamp-2">
                       {showcaseProducts[0].description || 'Activación garantizada a tu correo personal con soporte 24/7.'}
                     </p>
-                    <div className="pt-2 flex items-center justify-between text-xs font-bold text-emerald-400 border-t border-slate-800/80">
+                    <div className="pt-2 flex items-center justify-between text-xs font-bold text-violet-400 border-t border-white/10">
                       <span>Ver detalles & pedir por WhatsApp</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </div>
@@ -298,23 +302,23 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <div
                       key={prod.id}
                       onClick={() => onNavigate(`/productos/${prod.id}`)}
-                      className="group relative bg-gradient-to-b from-slate-900 to-slate-950 rounded-2xl overflow-hidden border border-slate-800 shadow-xl hover:border-emerald-500/60 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                      className="group relative bg-[#11121c]/95 rounded-2xl overflow-hidden border border-white/10 shadow-xl hover:border-violet-500/50 hover:shadow-[0_0_25px_rgba(139,92,246,0.2)] transition-all duration-300 cursor-pointer flex flex-col justify-between"
                     >
                       {/* Top Badge */}
                       <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
-                        <span className="inline-flex items-center gap-1 bg-emerald-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">
+                        <span className="inline-flex items-center gap-1 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm border border-violet-400/30">
                           <Sparkles className="w-3 h-3" />
                           {prod.badge || (prod.duration ? `${prod.duration}` : 'CUENTA PRO')}
                         </span>
                       </div>
 
                       {/* Image Presentation */}
-                      <div className="relative w-full aspect-square bg-slate-900/80 overflow-hidden flex items-center justify-center p-2">
+                      <div className="relative w-full aspect-square bg-[#08080d] overflow-hidden flex items-center justify-center p-2">
                         <img
                           src={prod.imageUrl}
                           alt={prod.name}
                           aria-hidden="true"
-                          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-30 scale-110 pointer-events-none select-none"
+                          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-25 scale-110 pointer-events-none select-none"
                           referrerPolicy="no-referrer"
                         />
                         <img
@@ -326,17 +330,17 @@ export const HomePage: React.FC<HomePageProps> = ({
                       </div>
 
                       {/* Card Bottom Details */}
-                      <div className="p-3.5 bg-slate-900/95 border-t border-slate-800/80 space-y-1.5">
+                      <div className="p-3.5 bg-[#0e0f19] border-t border-white/10 space-y-1.5">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-extrabold text-sm text-white group-hover:text-emerald-400 transition-colors line-clamp-1">
+                          <h4 className="font-extrabold text-sm text-white group-hover:text-violet-300 transition-colors line-clamp-1">
                             {prod.name}
                           </h4>
                           <div className="text-right shrink-0">
-                            <span className="text-xs font-black text-emerald-400">
+                            <span className="text-xs font-black text-violet-400">
                               {APP_CONFIG.currencySymbol} {prod.price.toFixed(2)}
                             </span>
                             {prod.comparePrice && prod.comparePrice > prod.price && (
-                              <span className="text-[10px] text-slate-400 line-through ml-1.5">
+                              <span className="text-[10px] text-slate-500 line-through ml-1.5">
                                 {APP_CONFIG.currencySymbol} {prod.comparePrice.toFixed(0)}
                               </span>
                             )}
@@ -345,7 +349,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                         <p className="text-[11px] text-slate-400 line-clamp-1">
                           {prod.description || 'Garantía y entrega inmediata a tu correo'}
                         </p>
-                        <div className="pt-1 flex items-center justify-between text-[10px] font-bold text-emerald-400">
+                        <div className="pt-1 flex items-center justify-between text-[10px] font-bold text-violet-400">
                           <span>Ver detalles & pedir</span>
                           <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -357,24 +361,24 @@ export const HomePage: React.FC<HomePageProps> = ({
                 /* NO PRODUCTS YET */
                 <div
                   onClick={() => onNavigate('/productos')}
-                  className="p-8 text-center bg-slate-900/90 border border-slate-800 rounded-2xl cursor-pointer hover:border-emerald-500/50"
+                  className="p-8 text-center bg-[#11121c]/90 border border-white/10 rounded-2xl cursor-pointer hover:border-violet-500/50"
                 >
-                  <Sparkles className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+                  <Sparkles className="w-8 h-8 text-violet-400 mx-auto mb-2" />
                   <p className="text-sm font-bold text-white">Explora nuestro Catálogo Digital</p>
                   <p className="text-xs text-slate-400 mt-1">Haz clic aquí para ver todos los productos disponibles</p>
                 </div>
               )}
 
               {/* Bottom Guarantee Pill - Striking Design */}
-              <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 border border-emerald-500/40 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between text-xs shadow-lg shadow-emerald-950/20 relative overflow-hidden group">
-                <div className="absolute -right-6 -top-6 w-20 h-20 bg-emerald-500/10 rounded-full blur-xl pointer-events-none" />
+              <div className="bg-gradient-to-r from-violet-950/70 via-[#131422] to-violet-950/70 border border-violet-500/40 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between text-xs shadow-lg relative overflow-hidden group">
+                <div className="absolute -right-6 -top-6 w-20 h-20 bg-violet-500/10 rounded-full blur-xl pointer-events-none" />
                 
                 <div className="flex items-center gap-2.5 z-10">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center shrink-0 shadow-inner">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <div className="w-8 h-8 rounded-xl bg-violet-500/20 border border-violet-400/30 flex items-center justify-center shrink-0 shadow-inner">
+                    <CheckCircle2 className="w-4 h-4 text-violet-400" />
                   </div>
                   <div>
-                    <div className="text-[10px] font-black uppercase tracking-wider text-emerald-400">
+                    <div className="text-[10px] font-black uppercase tracking-wider text-violet-400">
                       Garantía Total RICH PRO
                     </div>
                     <div className="text-xs sm:text-sm font-extrabold text-white tracking-tight">
@@ -384,8 +388,8 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
 
                 <div className="z-10 shrink-0">
-                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-slate-950 bg-emerald-400 hover:bg-emerald-300 px-3 py-1 rounded-lg shadow-sm uppercase tracking-wider transition-colors">
-                    <Sparkles className="w-3 h-3 text-slate-950" />
+                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 px-3 py-1 rounded-lg shadow-[0_0_12px_rgba(139,92,246,0.3)] border border-violet-400/30 uppercase tracking-wider transition-colors">
+                    <Sparkles className="w-3 h-3 text-white" />
                     100% SEGURO
                   </span>
                 </div>
@@ -395,19 +399,26 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* Featured Products Section */}
+      {/* Featured Products Section - Displays ALL products in rows of 4 */}
       <section id="featured-products-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-xs font-bold text-violet-400 uppercase tracking-wider mb-1">
               <TrendingUp className="w-4 h-4" />
-              <span>Selección Especial</span>
+              <span>Catálogo Completo de Suscripciones</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-              Productos Destacados
-            </h2>
-            <p className="text-slate-500 text-xs sm:text-sm mt-1">
-              Los artículos más solicitados por nuestros clientes en WhatsApp
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+                Productos Destacados
+              </h2>
+              {activeProducts.length > 0 && (
+                <span className="px-2.5 py-0.5 rounded-full bg-violet-950/70 border border-violet-500/30 text-violet-300 text-xs font-bold">
+                  {activeProducts.length} {activeProducts.length === 1 ? 'producto' : 'productos'}
+                </span>
+              )}
+            </div>
+            <p className="text-slate-400 text-xs sm:text-sm mt-1">
+              Todas nuestras cuentas oficiales y suscripciones disponibles con activación inmediata
             </p>
           </div>
 
@@ -415,30 +426,36 @@ export const HomePage: React.FC<HomePageProps> = ({
             type="button"
             id="view-all-featured-btn"
             onClick={() => onNavigate('/productos')}
-            className="inline-flex items-center gap-2 text-sm font-bold text-slate-900 hover:text-emerald-600 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-violet-400 transition-colors cursor-pointer"
           >
-            <span>Ver todo el catálogo</span>
+            <span>Ver filtros en catálogo</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
         {isLoading ? (
-          <ProductGridSkeleton count={4} />
-        ) : featuredProducts.length > 0 ? (
+          <ProductGridSkeleton count={8} />
+        ) : activeProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProducts.slice(0, 4).map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onViewDetail={(id) => onNavigate(`/productos/${id}`)}
-              />
-            ))}
+            {[...activeProducts]
+              .sort((a, b) => {
+                if (a.featured && !b.featured) return -1;
+                if (!a.featured && b.featured) return 1;
+                return 0;
+              })
+              .map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onViewDetail={(id) => onNavigate(`/productos/${id}`)}
+                />
+              ))}
           </div>
         ) : (
           <EmptyState
             icon="package"
-            title="Aún no hay productos destacados"
-            description="Explora todo nuestro catálogo para conocer nuestros productos disponibles."
+            title="Aún no hay productos disponibles"
+            description="Explora nuestro catálogo o agrega productos desde el panel de administración."
             actionText="Ver catálogo completo"
             onAction={() => onNavigate('/productos')}
           />
@@ -450,11 +467,11 @@ export const HomePage: React.FC<HomePageProps> = ({
         <section id="home-categories-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1">
+              <div className="flex items-center gap-2 text-xs font-bold text-violet-400 uppercase tracking-wider mb-1">
                 <Tag className="w-4 h-4" />
                 <span>Explorar por Categoría</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
                 Nuestras Categorías
               </h2>
             </div>
@@ -463,7 +480,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               type="button"
               id="view-all-cats-btn"
               onClick={() => onNavigate('/categorias')}
-              className="inline-flex items-center gap-2 text-sm font-bold text-slate-900 hover:text-emerald-600 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 text-sm font-bold text-slate-300 hover:text-violet-400 transition-colors cursor-pointer"
             >
               <span>Ver todas</span>
               <ArrowRight className="w-4 h-4" />
@@ -492,10 +509,11 @@ export const HomePage: React.FC<HomePageProps> = ({
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
           id="home-wa-cta-banner"
-          className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl border border-slate-800"
+          className="bg-gradient-to-br from-[#10111d] via-[#141627] to-[#0d0e17] text-white rounded-3xl p-8 sm:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl border border-violet-500/30"
         >
+          <div className="absolute -right-12 -bottom-12 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
           <div className="space-y-3 text-center md:text-left z-10">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-violet-400">
               ¿No encuentras lo que buscas?
             </span>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-white">
@@ -511,7 +529,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             href={waUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="z-10 shrink-0 px-7 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm sm:text-base shadow-lg transition-all flex items-center gap-2.5 active:scale-95"
+            className="z-10 shrink-0 px-7 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold rounded-xl text-sm sm:text-base shadow-[0_0_25px_rgba(139,92,246,0.4)] border border-violet-400/30 transition-all flex items-center gap-2.5 active:scale-95"
           >
             <MessageCircle className="w-5 h-5 fill-current" />
             <span>Consultar por WhatsApp</span>

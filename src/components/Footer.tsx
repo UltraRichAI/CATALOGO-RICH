@@ -12,12 +12,12 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
   const waUrl = getGeneralWhatsAppUrl();
 
   return (
-    <footer id="main-footer" className="bg-slate-900 text-slate-400 pt-14 pb-10 border-t border-slate-800">
+    <footer id="main-footer" className="bg-[#06060a] text-slate-400 pt-14 pb-10 border-t border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Value Propositions Banner */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-12 mb-12 border-b border-slate-800">
-          <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-12 mb-12 border-b border-white/10">
+          <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#0f1019]/90 border border-white/10 hover:border-violet-500/30 transition-all">
+            <div className="w-10 h-10 rounded-xl bg-violet-950/60 text-violet-400 flex items-center justify-center shrink-0 border border-violet-500/30">
               <MessageCircle className="w-5 h-5" />
             </div>
             <div>
@@ -28,8 +28,8 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
             </div>
           </div>
 
-          <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+          <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#0f1019]/90 border border-white/10 hover:border-violet-500/30 transition-all">
+            <div className="w-10 h-10 rounded-xl bg-violet-950/60 text-violet-400 flex items-center justify-center shrink-0 border border-violet-500/30">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -40,8 +40,8 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
             </div>
           </div>
 
-          <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
+          <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#0f1019]/90 border border-white/10 hover:border-violet-500/30 transition-all">
+            <div className="w-10 h-10 rounded-xl bg-violet-950/60 text-violet-400 flex items-center justify-center shrink-0 border border-violet-500/30">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
@@ -57,17 +57,17 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10">
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-slate-800 border border-slate-700 rounded-lg flex items-center justify-center text-emerald-400 font-extrabold text-xs">
+              <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-700 border border-violet-400/30 rounded-lg flex items-center justify-center text-white font-extrabold text-xs shadow-[0_0_10px_rgba(139,92,246,0.3)]">
                 RP
               </div>
               <span className="text-xl font-extrabold tracking-tight text-white">
-                RICH<span className="text-emerald-400 font-semibold">.PRO</span>
+                RICH<span className="text-violet-400 font-semibold">.PRO</span>
               </span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
               Catálogo oficial de suscripciones y licencias premium. Canva Pro 18 meses, Gemini Pro 18 meses, herramientas IA y suites de productividad con atención directa vía WhatsApp.
             </p>
-            <div className="flex items-center gap-2 text-xs text-emerald-400 font-medium">
+            <div className="flex items-center gap-2 text-xs text-violet-400 font-medium">
               <Clock className="w-4 h-4" />
               <span>{APP_CONFIG.supportHours}</span>
             </div>
@@ -82,7 +82,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
                 <button
                   type="button"
                   onClick={() => navigate('/')}
-                  className="hover:text-emerald-400 transition-colors cursor-pointer"
+                  className="hover:text-violet-300 transition-colors cursor-pointer"
                 >
                   Inicio
                 </button>
@@ -91,7 +91,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
                 <button
                   type="button"
                   onClick={() => navigate('/productos')}
-                  className="hover:text-emerald-400 transition-colors cursor-pointer"
+                  className="hover:text-violet-300 transition-colors cursor-pointer"
                 >
                   Catálogo Pro
                 </button>
@@ -100,7 +100,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
                 <button
                   type="button"
                   onClick={() => navigate('/categorias')}
-                  className="hover:text-emerald-400 transition-colors cursor-pointer"
+                  className="hover:text-violet-300 transition-colors cursor-pointer"
                 >
                   Categorías
                 </button>
@@ -110,7 +110,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
                   <button
                     type="button"
                     onClick={() => navigate('/admin')}
-                    className="hover:text-emerald-400 text-emerald-400 transition-colors flex items-center gap-1 cursor-pointer font-bold"
+                    className="hover:text-violet-300 text-violet-400 transition-colors flex items-center gap-1 cursor-pointer font-bold"
                   >
                     <Lock className="w-3.5 h-3.5" />
                     <span>Panel Administrador</span>
@@ -132,7 +132,7 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-semibold text-sm transition-all shadow-md active:scale-95"
+              className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl font-semibold text-sm transition-all shadow-[0_0_15px_rgba(139,92,246,0.3)] border border-violet-400/30 active:scale-95"
             >
               <MessageCircle className="w-4 h-4 fill-current" />
               Contactar por WhatsApp
@@ -141,11 +141,11 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 mt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-8 mt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>© {new Date().getFullYear()} RICH PRO. Todos los derechos reservados.</p>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5 text-slate-400">
-              <Database className="w-3.5 h-3.5 text-emerald-400" />
+              <Database className="w-3.5 h-3.5 text-violet-400" />
               Supabase Database & Realtime
             </span>
           </div>

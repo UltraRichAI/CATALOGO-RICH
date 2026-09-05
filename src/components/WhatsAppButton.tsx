@@ -23,13 +23,13 @@ export const WhatsAppButton: React.FC<WhatsAppButtonProps> = ({
 
   const variants = {
     primary:
-      'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm hover:shadow px-4 py-2.5 rounded-xl gap-2 text-sm md:text-base font-semibold',
+      'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-[0_0_15px_rgba(139,92,246,0.3)] hover:shadow-[0_0_20px_rgba(139,92,246,0.5)] border border-violet-400/30 px-4 py-2.5 rounded-xl gap-2 text-sm md:text-base font-semibold',
     secondary:
-      'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-4 py-2.5 rounded-xl gap-2 text-sm font-semibold',
+      'bg-violet-950/60 hover:bg-violet-900/60 text-violet-300 border border-violet-500/30 px-4 py-2.5 rounded-xl gap-2 text-sm font-semibold',
     outline:
-      'bg-transparent hover:bg-emerald-50 text-emerald-700 border border-emerald-300 hover:border-emerald-400 px-3.5 py-2 rounded-xl gap-1.5 text-sm font-medium',
+      'bg-transparent hover:bg-white/5 text-violet-300 border border-violet-500/40 hover:border-violet-400 px-3.5 py-2 rounded-xl gap-1.5 text-sm font-medium',
     compact:
-      'bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg gap-1.5 text-xs font-semibold',
+      'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white px-3 py-1.5 rounded-lg gap-1.5 text-xs font-semibold shadow-xs',
   };
 
   return (

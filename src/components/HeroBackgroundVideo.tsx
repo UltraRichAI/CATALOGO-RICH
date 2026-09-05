@@ -1,15 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Upload,
-  RotateCcw,
-  Check,
-  Sun,
-  Moon
-} from 'lucide-react';
+import { Upload } from 'lucide-react';
 
 interface HeroBackgroundVideoProps {
   children: React.ReactNode;
@@ -91,13 +81,9 @@ export const HeroBackgroundVideo: React.FC<HeroBackgroundVideoProps> = ({ childr
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [videoSrc, setVideoSrc] = useState<string | null>(OFFICIAL_HERO_VIDEO);
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState<boolean>(true);
-  const [hasCustomVideo, setHasCustomVideo] = useState<boolean>(false);
   const [videoLoaded, setVideoLoaded] = useState<boolean>(false);
-  const [uploadNotice, setUploadNotice] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [dimMode, setDimMode] = useState<DimMode>(() => {
+  const [dimMode] = useState<DimMode>(() => {
     try {
       const saved = localStorage.getItem(DIM_STORAGE_KEY) as DimMode;
       if (saved === 'clear' || saved === 'soft' || saved === 'dark') return saved;
@@ -122,13 +108,11 @@ export const HeroBackgroundVideo: React.FC<HeroBackgroundVideoProps> = ({ childr
       if (storedBlob) {
         const objectUrl = URL.createObjectURL(storedBlob);
         setVideoSrc(objectUrl);
-        setHasCustomVideo(true);
         return;
       }
 
       // 2. Default to the official video in /public/hero-video.mp4
       setVideoSrc(OFFICIAL_HERO_VIDEO);
-      setHasCustomVideo(false);
     }
 
     initVideo();
@@ -236,38 +220,6 @@ export const HeroBackgroundVideo: React.FC<HeroBackgroundVideoProps> = ({ childr
     };
   }, [videoLoaded, videoSrc]);
 
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current.play().catch(() => {});
-      setIsPlaying(true);
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
-
-  const toggleMute = () => {
-    if (!videoRef.current) return;
-    const nextMuted = !videoRef.current.muted;
-    videoRef.current.muted = nextMuted;
-    setIsMuted(nextMuted);
-  };
-
-  const cycleDimMode = () => {
-    const modes: DimMode[] = ['clear', 'soft', 'dark'];
-    const nextIndex = (modes.indexOf(dimMode) + 1) % modes.length;
-    const nextMode = modes[nextIndex];
-    setDimMode(nextMode);
-    try {
-      localStorage.setItem(DIM_STORAGE_KEY, nextMode);
-    } catch {}
-
-    const label = nextMode === 'clear' ? 'Vídeo 100% Brillante' : nextMode === 'soft' ? 'Atenuado Suave' : 'Modo Contraste';
-    setUploadNotice(label);
-    setTimeout(() => setUploadNotice(null), 2000);
-  };
-
   const handleFileUpload = async (file: File) => {
     if (!file.type.startsWith('video/')) {
       alert('Por favor selecciona un archivo de vídeo válido (MP4, WebM o MOV).');
@@ -280,12 +232,7 @@ export const HeroBackgroundVideo: React.FC<HeroBackgroundVideoProps> = ({ childr
 
       const objectUrl = URL.createObjectURL(file);
       setVideoSrc(objectUrl);
-      setHasCustomVideo(true);
       setVideoLoaded(true);
-      setIsPlaying(true);
-
-      setUploadNotice('¡Vídeo guardado permanentemente!');
-      setTimeout(() => setUploadNotice(null), 3500);
 
       setTimeout(() => {
         if (videoRef.current) {
@@ -295,15 +242,6 @@ export const HeroBackgroundVideo: React.FC<HeroBackgroundVideoProps> = ({ childr
     } catch (err) {
       console.error('Error cargando vídeo:', err);
     }
-  };
-
-  const handleResetVideo = async () => {
-    await clearVideoBlob();
-    setVideoSrc(null);
-    setHasCustomVideo(false);
-    setVideoLoaded(false);
-    setUploadNotice('Fondo restablecido');
-    setTimeout(() => setUploadNotice(null), 2500);
   };
 
   return (
@@ -342,12 +280,10 @@ export const HeroBackgroundVideo: React.FC<HeroBackgroundVideoProps> = ({ childr
             poster={OFFICIAL_HERO_POSTER}
             autoPlay
             loop
-            muted={isMuted}
+            muted
             playsInline
             preload="auto"
             onLoadedData={() => setVideoLoaded(true)}
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
             onError={() => {
               console.warn('Could not play videoSrc, showing cyber canvas');
               setVideoLoaded(false);
@@ -376,117 +312,6 @@ export const HeroBackgroundVideo: React.FC<HeroBackgroundVideoProps> = ({ childr
         {dimMode === 'dark' && (
           <div className="absolute inset-0 bg-black/45 bg-gradient-to-t from-[#07080e] via-transparent to-black/35 pointer-events-none" />
         )}
-      </div>
-
-      {/* FLOATING VIDEO CONTROLS PILL (Discreet, Top-Right Corner) */}
-      <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
-        {uploadNotice && (
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-950/90 border border-violet-500/50 text-white text-[11px] font-bold shadow-xl backdrop-blur-md animate-fade-in">
-            <Check className="w-3.5 h-3.5 text-emerald-400" />
-            <span>{uploadNotice}</span>
-          </div>
-        )}
-
-        <div className="flex items-center gap-1 p-1 rounded-full bg-black/80 backdrop-blur-md border border-white/20 text-white shadow-2xl">
-          {/* Status badge */}
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            title="Haz clic para subir o cambiar el vídeo de fondo MP4"
-            className="flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-violet-300 hover:text-white transition-colors cursor-pointer"
-          >
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-400"></span>
-            </span>
-            <span className="hidden sm:inline">
-              {videoSrc ? 'VÍDEO ACTIVO' : 'SUBIR VÍDEO'}
-            </span>
-          </button>
-
-          {/* Brightness / Dimming Toggle */}
-          {videoSrc && (
-            <button
-              type="button"
-              onClick={cycleDimMode}
-              title={`Brillo del vídeo: ${dimMode === 'clear' ? '100% Visible' : dimMode === 'soft' ? 'Suave' : 'Oscuro'}`}
-              className="px-2 py-1 rounded-full hover:bg-white/20 text-amber-300 hover:text-amber-200 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
-            >
-              {dimMode === 'clear' ? (
-                <>
-                  <Sun className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
-                  <span className="hidden sm:inline text-[10px] uppercase font-extrabold text-amber-200">Brillante</span>
-                </>
-              ) : (
-                <>
-                  <Moon className="w-3.5 h-3.5 text-violet-300" />
-                  <span className="hidden sm:inline text-[10px] uppercase font-bold text-violet-200">Atenuado</span>
-                </>
-              )}
-            </button>
-          )}
-
-          {/* Play/Pause */}
-          {videoSrc && (
-            <button
-              type="button"
-              onClick={togglePlay}
-              title={isPlaying ? 'Pausar vídeo de fondo' : 'Reproducir vídeo de fondo'}
-              aria-label={isPlaying ? 'Pausar vídeo' : 'Reproducir vídeo'}
-              className="p-1.5 rounded-full hover:bg-white/20 text-slate-200 hover:text-white transition-colors cursor-pointer"
-            >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current text-violet-400" />}
-            </button>
-          )}
-
-          {/* Sound Mute/Unmute */}
-          {videoSrc && (
-            <button
-              type="button"
-              onClick={toggleMute}
-              title={isMuted ? 'Activar sonido del vídeo' : 'Silenciar sonido'}
-              aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}
-              className="p-1.5 rounded-full hover:bg-white/20 text-slate-200 hover:text-white transition-colors cursor-pointer"
-            >
-              {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5 text-violet-400" />}
-            </button>
-          )}
-
-          {/* Reset if custom */}
-          {hasCustomVideo && (
-            <button
-              type="button"
-              onClick={handleResetVideo}
-              title="Quitar vídeo personalizado"
-              className="p-1.5 rounded-full hover:bg-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          )}
-
-          {/* Upload Button */}
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            title="Seleccionar vídeo MP4 de tu equipo"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-600 hover:bg-violet-500 text-white text-[11px] font-bold transition-all shadow-md cursor-pointer ml-0.5"
-          >
-            <Upload className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">Cargar MP4</span>
-          </button>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="video/mp4,video/webm,video/quicktime"
-            className="hidden"
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                handleFileUpload(e.target.files[0]);
-              }
-            }}
-          />
-        </div>
       </div>
 
       {/* FOREGROUND CONTENT */}

@@ -14,12 +14,14 @@ import {
   CheckCircle2,
   Clock,
   Star,
+  Film,
 } from 'lucide-react';
 import type { Product, Category } from '../types/index.ts';
 import { ProductCard } from '../components/ProductCard.tsx';
 import { CategoryCard } from '../components/CategoryCard.tsx';
 import { ProductGridSkeleton } from '../components/LoadingSkeleton.tsx';
 import { EmptyState } from '../components/EmptyState.tsx';
+import { HeroBackgroundVideo } from '../components/HeroBackgroundVideo.tsx';
 import { APP_CONFIG } from '../config/index.ts';
 import { getGeneralWhatsAppUrl } from '../utils/whatsapp.ts';
 
@@ -128,43 +130,36 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </div>
 
-      {/* Hero Section - Geometric Balance & Rich Product Showcase */}
-      <section
-        id="home-hero-section"
-        className="relative overflow-hidden bg-[#0a0b12]/90 border-b border-white/10 py-8 sm:py-12 md:py-16 px-4 sm:px-6 lg:px-8"
-      >
-        {/* Subtle Ambient Radial Glow */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center relative z-10">
-          {/* Left Text Block */}
+      {/* Hero Section with Video in the Background */}
+      <HeroBackgroundVideo>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+          {/* Left Text Block - Directly overlaid on the video without glass box */}
           <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-violet-950/60 border border-violet-500/30 text-violet-300 text-xs font-bold rounded-full uppercase tracking-wider shadow-2xs">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-black/60 border border-white/20 text-violet-200 text-xs font-bold rounded-full uppercase tracking-wider shadow-lg">
               <Sparkles className="w-3.5 h-3.5 text-violet-400" />
               <span>RICH PRO • CUENTAS & SUSCRIPCIONES DIGITALES</span>
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.15] tracking-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.15] tracking-tight [text-shadow:_0_3px_20px_rgb(0_0_0_/_95%)]">
                 {heroTitle}
               </h1>
-              <p className="text-base sm:text-lg font-bold text-violet-400 line-clamp-2">
+              <p className="text-base sm:text-lg font-bold text-violet-300 line-clamp-2 [text-shadow:_0_2px_12px_rgb(0_0_0_/_90%)]">
                 {heroSubtitle}
               </p>
             </div>
 
-            <p className="text-slate-400 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal">
+            <p className="text-slate-100 text-sm sm:text-base max-w-xl mx-auto lg:mx-0 leading-relaxed font-normal [text-shadow:_0_2px_12px_rgb(0_0_0_/_95%)]">
               Herramientas premium de diseño, productividad e inteligencia artificial para estudiantes, creadores y profesionales. Accede a funciones avanzadas y ahorra dinero.
             </p>
 
             {/* University & Instant Activation Highlight Banner */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-violet-950/60 via-indigo-950/40 to-violet-950/60 border border-violet-500/30 text-left space-y-1.5 shadow-2xs max-w-xl mx-auto lg:mx-0">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-black/60 border border-violet-500/40 text-left space-y-1 shadow-xl max-w-xl mx-auto lg:mx-0">
               <div className="flex items-center gap-2 text-violet-200 font-black text-xs sm:text-sm uppercase tracking-wider">
                 <GraduationCap className="w-4 h-4 text-violet-400" />
                 <span>🎓 PRECIOS ESPECIALES & GARANTÍA TOTAL</span>
               </div>
-              <p className="text-xs sm:text-sm text-violet-300 font-bold leading-relaxed">
+              <p className="text-xs sm:text-sm text-violet-200 font-bold leading-relaxed">
                 {heroOfferText}
               </p>
             </div>
@@ -174,7 +169,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 type="button"
                 id="hero-btn-catalog"
                 onClick={() => onNavigate('/productos')}
-                className="w-full sm:w-auto px-7 py-3.5 sm:px-8 sm:py-4 bg-white/10 hover:bg-white/15 text-white font-black tracking-wider uppercase text-xs sm:text-sm rounded-xl border border-white/15 hover:border-violet-400/50 shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                className="w-full sm:w-auto px-7 py-3.5 sm:px-8 sm:py-4 bg-black/60 hover:bg-black/80 text-white font-black tracking-wider uppercase text-xs sm:text-sm rounded-xl border border-white/30 hover:border-violet-400/80 shadow-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               >
                 <span>VER CATÁLOGO</span>
                 <ArrowRight className="w-4 h-4" />
@@ -185,7 +180,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 href={waUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto px-7 py-3.5 sm:px-8 sm:py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black tracking-wider uppercase text-xs sm:text-sm rounded-xl shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-violet-400/40 transition-all flex items-center justify-center gap-2 active:scale-95"
+                className="w-full sm:w-auto px-7 py-3.5 sm:px-8 sm:py-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black tracking-wider uppercase text-xs sm:text-sm rounded-xl shadow-[0_0_25px_rgba(139,92,246,0.7)] border border-violet-400/60 transition-all flex items-center justify-center gap-2 active:scale-95"
               >
                 <MessageCircle className="w-5 h-5 fill-current" />
                 <span>COMPRAR POR WHATSAPP</span>
@@ -193,40 +188,40 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
 
             {/* Quick Metrics */}
-            <div className="pt-4 grid grid-cols-3 gap-3 border-t border-white/10 max-w-md mx-auto lg:mx-0 text-left">
+            <div className="pt-4 grid grid-cols-3 gap-3 border-t border-white/20 max-w-md mx-auto lg:mx-0 text-left">
               <div>
-                <div className="text-xl sm:text-2xl font-black text-violet-400">
+                <div className="text-xl sm:text-2xl font-black text-violet-300 [text-shadow:_0_2px_12px_rgb(0_0_0_/_90%)]">
                   {APP_CONFIG.currencySymbol} {minPrice.toFixed(2)}
                 </div>
-                <div className="text-[11px] text-slate-400 font-bold">Desde / Mejor Precio</div>
+                <div className="text-[11px] text-slate-200 font-bold [text-shadow:_0_2px_8px_rgb(0_0_0_/_90%)]">Desde / Mejor Precio</div>
               </div>
               <div>
-                <div className="text-xl sm:text-2xl font-black text-white flex items-center gap-1">
+                <div className="text-xl sm:text-2xl font-black text-white flex items-center gap-1 [text-shadow:_0_2px_12px_rgb(0_0_0_/_90%)]">
                   <span>5 Min</span>
                   <Zap className="w-4 h-4 text-amber-400 fill-current" />
                 </div>
-                <div className="text-[11px] text-slate-400 font-bold">Activación Rápida</div>
+                <div className="text-[11px] text-slate-200 font-bold [text-shadow:_0_2px_8px_rgb(0_0_0_/_90%)]">Activación Rápida</div>
               </div>
               <div>
-                <div className="text-xl sm:text-2xl font-black text-white flex items-center gap-1">
+                <div className="text-xl sm:text-2xl font-black text-white flex items-center gap-1 [text-shadow:_0_2px_12px_rgb(0_0_0_/_90%)]">
                   <span>100%</span>
                   <ShieldCheck className="w-4 h-4 text-violet-400" />
                 </div>
-                <div className="text-[11px] text-slate-400 font-bold">Garantía Total</div>
+                <div className="text-[11px] text-slate-200 font-bold [text-shadow:_0_2px_8px_rgb(0_0_0_/_90%)]">Garantía Total</div>
               </div>
             </div>
           </div>
 
-          {/* Right Visual Showcase */}
+          {/* Right Visual Showcase - Top Accounts over the Background Video */}
           <div className="lg:col-span-6 flex flex-col items-center">
             <div className="w-full max-w-lg space-y-4">
               {/* Header Badge */}
               <div className="flex items-center justify-between px-1">
-                <div className="flex items-center gap-1.5 text-xs font-black text-white uppercase tracking-wider">
+                <div className="flex items-center gap-1.5 text-xs font-black text-white uppercase tracking-wider [text-shadow:_0_2px_8px_rgb(0_0_0_/_90%)]">
                   <Flame className="w-4 h-4 text-rose-500 fill-current" />
                   <span>{showcaseProducts.length === 1 ? 'Cuenta Destacada' : 'Cuentas Más Vendidas'}</span>
                 </div>
-                <span className="text-[11px] font-bold text-violet-300 bg-violet-950/60 px-2.5 py-0.5 rounded-full border border-violet-500/30">
+                <span className="text-[11px] font-bold text-violet-300 bg-black/70 px-2.5 py-0.5 rounded-full border border-violet-500/40">
                   Activación Inmediata
                 </span>
               </div>
@@ -236,16 +231,16 @@ export const HomePage: React.FC<HomePageProps> = ({
                 /* SINGLE PRODUCT: Elegant compact card */
                 <div
                   onClick={() => onNavigate(`/productos/${showcaseProducts[0].id}`)}
-                  className="group relative bg-[#11121c]/95 rounded-2xl overflow-hidden border border-white/10 shadow-2xl hover:border-violet-500/50 hover:shadow-[0_0_30px_rgba(139,92,246,0.2)] transition-all duration-300 cursor-pointer flex flex-col max-w-md mx-auto w-full"
+                  className="group relative bg-[#0e0f1b]/95 rounded-2xl overflow-hidden border border-white/20 shadow-2xl hover:border-violet-500/60 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)] transition-all duration-300 cursor-pointer flex flex-col max-w-md mx-auto w-full"
                 >
                   {/* Top Badges */}
                   <div className="absolute top-3 left-3 z-20 flex flex-wrap gap-1.5 pointer-events-none">
-                    <span className="inline-flex items-center gap-1 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider shadow-sm border border-violet-400/30">
+                    <span className="inline-flex items-center gap-1 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider shadow-sm border border-violet-400/40">
                       <Sparkles className="w-3.5 h-3.5 fill-current" />
                       {showcaseProducts[0].badge || (showcaseProducts[0].duration ? `${showcaseProducts[0].duration}` : 'CUENTA PRO')}
                     </span>
                     {showcaseProducts[0].duration && (
-                      <span className="inline-flex items-center gap-1 bg-black/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-md border border-white/10">
+                      <span className="inline-flex items-center gap-1 bg-black/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-md border border-white/15">
                         <Clock className="w-3 h-3 text-violet-400" />
                         {showcaseProducts[0].duration}
                       </span>
@@ -253,7 +248,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   </div>
 
                   {/* Image Presentation */}
-                  <div className="relative w-full h-64 sm:h-72 bg-[#08080d] overflow-hidden flex items-center justify-center p-4">
+                  <div className="relative w-full h-64 sm:h-72 bg-[#06070d]/90 overflow-hidden flex items-center justify-center p-4">
                     <img
                       src={showcaseProducts[0].imageUrl}
                       alt={showcaseProducts[0].name}
@@ -270,7 +265,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                   </div>
 
                   {/* Card Bottom Details */}
-                  <div className="p-4 bg-[#0e0f19] border-t border-white/10 space-y-2">
+                  <div className="p-4 bg-[#0a0b16] border-t border-white/10 space-y-2">
                     <div className="flex items-center justify-between gap-3">
                       <h4 className="font-extrabold text-base text-white group-hover:text-violet-300 transition-colors line-clamp-1">
                         {showcaseProducts[0].name}
@@ -302,18 +297,18 @@ export const HomePage: React.FC<HomePageProps> = ({
                     <div
                       key={prod.id}
                       onClick={() => onNavigate(`/productos/${prod.id}`)}
-                      className="group relative bg-[#11121c]/95 rounded-2xl overflow-hidden border border-white/10 shadow-xl hover:border-violet-500/50 hover:shadow-[0_0_25px_rgba(139,92,246,0.2)] transition-all duration-300 cursor-pointer flex flex-col justify-between"
+                      className="group relative bg-[#0e0f1b]/95 rounded-2xl overflow-hidden border border-white/20 shadow-xl hover:border-violet-500/60 hover:shadow-[0_0_25px_rgba(139,92,246,0.3)] transition-all duration-300 cursor-pointer flex flex-col justify-between"
                     >
                       {/* Top Badge */}
                       <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1 pointer-events-none">
-                        <span className="inline-flex items-center gap-1 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm border border-violet-400/30">
+                        <span className="inline-flex items-center gap-1 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm border border-violet-400/40">
                           <Sparkles className="w-3 h-3" />
                           {prod.badge || (prod.duration ? `${prod.duration}` : 'CUENTA PRO')}
                         </span>
                       </div>
 
                       {/* Image Presentation */}
-                      <div className="relative w-full aspect-square bg-[#08080d] overflow-hidden flex items-center justify-center p-2">
+                      <div className="relative w-full aspect-square bg-[#06070d]/90 overflow-hidden flex items-center justify-center p-2">
                         <img
                           src={prod.imageUrl}
                           alt={prod.name}
@@ -330,7 +325,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                       </div>
 
                       {/* Card Bottom Details */}
-                      <div className="p-3.5 bg-[#0e0f19] border-t border-white/10 space-y-1.5">
+                      <div className="p-3.5 bg-[#0a0b16] border-t border-white/10 space-y-1.5">
                         <div className="flex items-center justify-between">
                           <h4 className="font-extrabold text-sm text-white group-hover:text-violet-300 transition-colors line-clamp-1">
                             {prod.name}
@@ -361,7 +356,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 /* NO PRODUCTS YET */
                 <div
                   onClick={() => onNavigate('/productos')}
-                  className="p-8 text-center bg-[#11121c]/90 border border-white/10 rounded-2xl cursor-pointer hover:border-violet-500/50"
+                  className="p-8 text-center bg-[#0e0f1b]/95 border border-white/20 rounded-2xl cursor-pointer hover:border-violet-500/50"
                 >
                   <Sparkles className="w-8 h-8 text-violet-400 mx-auto mb-2" />
                   <p className="text-sm font-bold text-white">Explora nuestro Catálogo Digital</p>
@@ -370,7 +365,7 @@ export const HomePage: React.FC<HomePageProps> = ({
               )}
 
               {/* Bottom Guarantee Pill - Striking Design */}
-              <div className="bg-gradient-to-r from-violet-950/70 via-[#131422] to-violet-950/70 border border-violet-500/40 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between text-xs shadow-lg relative overflow-hidden group">
+              <div className="bg-[#121324]/90 border border-violet-500/40 rounded-2xl p-3 sm:p-3.5 flex items-center justify-between text-xs shadow-xl relative overflow-hidden group">
                 <div className="absolute -right-6 -top-6 w-20 h-20 bg-violet-500/10 rounded-full blur-xl pointer-events-none" />
                 
                 <div className="flex items-center gap-2.5 z-10">
@@ -397,7 +392,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
           </div>
         </div>
-      </section>
+      </HeroBackgroundVideo>
 
       {/* Featured Products Section - Displays ALL products in rows of 4 */}
       <section id="featured-products-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

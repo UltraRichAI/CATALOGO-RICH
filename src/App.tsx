@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase, supabaseService, isSupabaseConfigured } from './lib/supabase.ts';
+import {
+  supabase,
+  supabaseService,
+  isSupabaseConfigured,
+  getLocalProducts,
+  getLocalCategories,
+} from './lib/supabase.ts';
 import type { Product, Category } from './types/index.ts';
 import { CartProvider } from './context/CartContext.tsx';
 import { ToastProvider } from './context/ToastContext.tsx';
@@ -14,12 +20,18 @@ import { CategoriesPage } from './pages/CategoriesPage.tsx';
 import { AdminPage } from './pages/AdminPage.tsx';
 
 export default function App() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => {
+    return getLocalProducts();
+  });
+  const [categories, setCategories] = useState<Category[]>(() => {
+    return getLocalCategories();
+  });
   const [bestSellerIds, setBestSellerIds] = useState<string[]>(() => {
     return supabaseService.getLocalBestSellerIds();
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    return getLocalProducts().length === 0;
+  });
   const [adminUser, setAdminUser] = useState<any>(() => {
     try {
       const saved = localStorage.getItem('rich_pro_admin_session');

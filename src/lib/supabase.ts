@@ -95,7 +95,18 @@ export const setLocalProducts = (products: Product[]) => {
   try {
     localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(products));
   } catch (e) {
-    console.warn('Error saving local products cache:', e);
+    console.warn('Error saving local products cache, attempting lightweight fallback:', e);
+    try {
+      const lightweight = products.map((p) => ({
+        ...p,
+        imageUrl: p.imageUrl.startsWith('data:') && p.imageUrl.length > 50000
+          ? 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80'
+          : p.imageUrl,
+      }));
+      localStorage.setItem(LOCAL_PRODUCTS_KEY, JSON.stringify(lightweight));
+    } catch {
+      // Storage unavailable or private mode quota reached
+    }
   }
 };
 

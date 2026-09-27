@@ -39,6 +39,7 @@ import { formatCurrency } from '../utils/formatters.ts';
 import { ConfirmModal } from '../components/ConfirmModal.tsx';
 import { useToast } from '../context/ToastContext.tsx';
 import { APP_CONFIG } from '../config/index.ts';
+import { compressImageFile } from '../utils/imageCompressor.ts';
 
 interface AdminPageProps {
   products: Product[];
@@ -105,6 +106,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
   // Product Modal State
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [isSavingProduct, setIsSavingProduct] = useState(false);
+  const [isCompressingImage, setIsCompressingImage] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [productForm, setProductForm] = useState({
     name: '',
@@ -350,8 +353,8 @@ export const AdminPage: React.FC<AdminPageProps> = ({
     setIsProductModalOpen(true);
   };
 
-  // Handle local image file upload and convert to base64 Data URL
-  const handleProductImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle local image file upload and convert to optimized base64 Data URL
+  const handleProductImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -360,22 +363,29 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       return;
     }
 
-    if (file.size > 4 * 1024 * 1024) {
-      showToast('La imagen es mayor a 4MB. Te recomendamos una imagen más ligera.', 'error');
+    setIsCompressingImage(true);
+    try {
+      showToast('Optimizando imagen...', 'info');
+      const optimizedDataUrl = await compressImageFile(file, 800, 800, 0.82);
+      setProductForm((prev) => ({ ...prev, imageUrl: optimizedDataUrl }));
+      showToast('Imagen optimizada y cargada con éxito', 'success');
+    } catch (err: any) {
+      console.warn('Fallback lector de imagen:', err);
+      const reader = new FileReader();
+      reader.onload = (loadEvt) => {
+        const dataUrl = loadEvt.target?.result as string;
+        if (dataUrl) {
+          setProductForm((prev) => ({ ...prev, imageUrl: dataUrl }));
+          showToast('Imagen cargada correctamente', 'success');
+        }
+      };
+      reader.onerror = () => {
+        showToast('Error al leer el archivo de imagen', 'error');
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setIsCompressingImage(false);
     }
-
-    const reader = new FileReader();
-    reader.onload = (loadEvt) => {
-      const dataUrl = loadEvt.target?.result as string;
-      if (dataUrl) {
-        setProductForm((prev) => ({ ...prev, imageUrl: dataUrl }));
-        showToast('Imagen cargada correctamente', 'success');
-      }
-    };
-    reader.onerror = () => {
-      showToast('Error al leer el archivo de imagen', 'error');
-    };
-    reader.readAsDataURL(file);
   };
 
   const handleSaveProduct = async (e: React.FormEvent) => {
@@ -392,6 +402,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
     const numComparePrice = productForm.comparePrice ? parseFloat(productForm.comparePrice) : undefined;
     const selectedCat = categories.find((c) => c.name === productForm.category);
 
+    setIsSavingProduct(true);
     try {
       await supabaseService.saveProduct({
         id: editingProduct?.id,
@@ -408,15 +419,21 @@ export const AdminPage: React.FC<AdminPageProps> = ({
         featured: productForm.featured,
       });
 
-      await onDataChanged();
+      // Optimistic instant response: close modal and show toast immediately
+      setIsProductModalOpen(false);
       showToast(
         editingProduct ? 'Producto actualizado correctamente' : 'Producto creado en el catálogo RICH PRO',
         'success'
       );
-      setIsProductModalOpen(false);
+      // Refresh data in background without blocking modal close
+      onDataChanged().catch((err) => {
+        console.warn('Background refresh after product save:', err);
+      });
     } catch (err: any) {
       console.error('Error guardando producto:', err);
       showToast('Error al guardar producto: ' + (err.message || ''), 'error');
+    } finally {
+      setIsSavingProduct(false);
     }
   };
 
@@ -1483,12 +1500,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       <label className="cursor-pointer px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[11px] font-bold text-slate-200 flex items-center gap-1.5 transition-colors">
-                        <Upload className="w-3.5 h-3.5 text-violet-400" />
-                        <span>Subir Imagen</span>
+                        {isCompressingImage ? (
+                          <Loader2 className="w-3.5 h-3.5 text-violet-400 animate-spin" />
+                        ) : (
+                          <Upload className="w-3.5 h-3.5 text-violet-400" />
+                        )}
+                        <span>{isCompressingImage ? 'Optimizando...' : 'Subir Imagen'}</span>
                         <input
                           type="file"
                           accept="image/*"
                           onChange={handleProductImageUpload}
+                          disabled={isCompressingImage}
                           className="hidden"
                         />
                       </label>
@@ -1609,9 +1631,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
                 <button
                   type="submit"
-                  className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold rounded-xl transition-all shadow-md border border-violet-400/30 cursor-pointer"
+                  disabled={isSavingProduct || isCompressingImage}
+                  className="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all shadow-md border border-violet-400/30 cursor-pointer flex items-center gap-2"
                 >
-                  {editingProduct ? 'Guardar Cambios' : 'Crear Cuenta'}
+                  {isSavingProduct && <Loader2 className="w-4 h-4 animate-spin text-white" />}
+                  <span>{isSavingProduct ? 'Guardando...' : editingProduct ? 'Guardar Cambios' : 'Crear Cuenta'}</span>
                 </button>
               </div>
             </form>

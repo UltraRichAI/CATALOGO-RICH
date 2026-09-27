@@ -131,7 +131,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToCatalog }) =
                   />
 
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-semibold text-white text-sm truncate">
+                    <h4
+                      title={product.name}
+                      className="font-semibold text-white text-sm line-clamp-2 leading-snug"
+                    >
                       {product.name}
                     </h4>
                     <p className="text-xs font-bold text-violet-400 mt-0.5">

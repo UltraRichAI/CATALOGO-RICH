@@ -37,20 +37,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       className="group bg-[#11121c]/90 hover:bg-[#151724] p-4 rounded-2xl border border-white/10 hover:border-violet-500/40 shadow-lg shadow-black/40 hover:shadow-[0_8px_30px_rgba(139,92,246,0.18)] transition-all duration-300 flex flex-col justify-between cursor-pointer relative overflow-hidden"
     >
       {/* Image & Badges Container */}
-      <div className="aspect-square w-full bg-[#08080d] rounded-xl mb-4 relative overflow-hidden flex items-center justify-center p-2 border border-white/5">
-        {/* Subtle blurred backdrop to complement flyers/banners */}
-        <img
-          src={product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80'}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-25 scale-110 pointer-events-none select-none"
-          referrerPolicy="no-referrer"
-        />
-
+      <div className="aspect-square w-full bg-[#08080d] rounded-xl mb-4 relative overflow-hidden flex items-center justify-center border border-white/5">
         <img
           src={product.imageUrl || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80'}
           alt={product.name}
-          className="relative z-10 max-h-full max-w-full w-auto h-auto object-contain rounded-lg group-hover:scale-105 transition-transform duration-500 shadow-2xs"
+          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
           referrerPolicy="no-referrer"
           onError={(e) => {
@@ -59,12 +50,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           }}
         />
 
-        {/* Badges */}
-        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-20 pointer-events-none">
-          {product.badge && (
-            <span className="inline-flex items-center gap-1 bg-black/80 backdrop-blur-xs text-violet-300 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-xs border border-violet-500/30">
-              <Sparkles className="w-3 h-3 text-violet-400" />
-              {product.badge}
+        {/* Badges - sleek and compact */}
+        <div className="absolute top-2 left-2 flex flex-wrap gap-1 z-20 pointer-events-none max-w-[85%]">
+          {hasOffer && (
+            <span className="inline-flex items-center gap-1 bg-rose-600/90 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-xs">
+              <Tag className="w-2.5 h-2.5" />
+              -{discountPercent}%
             </span>
           )}
           {product.duration && (
@@ -72,10 +63,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               {product.duration}
             </span>
           )}
-          {hasOffer && (
-            <span className="inline-flex items-center gap-1 bg-rose-600/90 backdrop-blur-xs text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider shadow-xs">
-              <Tag className="w-3 h-3" />
-              -{discountPercent}% OFF
+          {product.badge && !product.duration && (
+            <span className="inline-flex items-center gap-1 bg-black/80 backdrop-blur-xs text-violet-300 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-xs border border-violet-500/30">
+              <Sparkles className="w-2.5 h-2.5 text-violet-400" />
+              {product.badge}
             </span>
           )}
         </div>
@@ -87,27 +78,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             e.stopPropagation();
             onViewDetail(product.id);
           }}
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/70 backdrop-blur-xs text-slate-300 hover:text-white hover:bg-violet-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-xs border border-white/10"
+          className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/70 backdrop-blur-xs text-slate-300 hover:text-white hover:bg-violet-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-xs border border-white/10"
           aria-label="Ver detalles"
         >
           <Eye className="w-4 h-4" />
         </button>
-
-        {/* Category Tag on Image */}
-        {product.category && (
-          <div className="absolute bottom-2.5 left-2.5 bg-black/80 backdrop-blur-xs text-slate-300 text-[10px] font-semibold px-2 py-0.5 rounded border border-white/10">
-            {product.category}
-          </div>
-        )}
       </div>
 
       {/* Content */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
-          <h3 className="font-bold text-white text-base leading-snug line-clamp-1 group-hover:text-violet-300 transition-colors">
+          {/* Category Tag moved cleanly above the title so it never obscures the image */}
+          {product.category && (
+            <div className="text-[11px] font-bold text-violet-400 tracking-wider uppercase mb-1 line-clamp-1">
+              {product.category}
+            </div>
+          )}
+          <h3
+            title={product.name}
+            className="font-bold text-white text-base leading-snug line-clamp-2 min-h-[2.6rem] group-hover:text-violet-300 transition-colors"
+          >
             {product.name}
           </h3>
-          <p className="text-slate-400 text-xs mt-1 line-clamp-2 leading-relaxed">
+          <p className="text-slate-400 text-xs mt-1.5 line-clamp-2 leading-relaxed">
             {product.description}
           </p>
         </div>

@@ -248,26 +248,22 @@ export const HomePage: React.FC<HomePageProps> = ({
                   </div>
 
                   {/* Image Presentation */}
-                  <div className="relative w-full h-64 sm:h-72 bg-[#06070d]/90 overflow-hidden flex items-center justify-center p-4">
+                  <div className="relative w-full h-64 sm:h-72 bg-[#06070d]/90 overflow-hidden flex items-center justify-center">
                     <img
                       src={showcaseProducts[0].imageUrl}
                       alt={showcaseProducts[0].name}
-                      aria-hidden="true"
-                      className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-110 pointer-events-none select-none"
-                      referrerPolicy="no-referrer"
-                    />
-                    <img
-                      src={showcaseProducts[0].imageUrl}
-                      alt={showcaseProducts[0].name}
-                      className="relative z-10 max-h-full max-w-full object-contain rounded-xl shadow-md group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
                     />
                   </div>
 
                   {/* Card Bottom Details */}
                   <div className="p-4 bg-[#0a0b16] border-t border-white/10 space-y-2">
-                    <div className="flex items-center justify-between gap-3">
-                      <h4 className="font-extrabold text-base text-white group-hover:text-violet-300 transition-colors line-clamp-1">
+                    <div className="flex items-start justify-between gap-3">
+                      <h4
+                        title={showcaseProducts[0].name}
+                        className="font-extrabold text-base text-white group-hover:text-violet-300 transition-colors line-clamp-2 leading-snug"
+                      >
                         {showcaseProducts[0].name}
                       </h4>
                       <div className="text-right shrink-0">
@@ -308,26 +304,22 @@ export const HomePage: React.FC<HomePageProps> = ({
                       </div>
 
                       {/* Image Presentation */}
-                      <div className="relative w-full aspect-square bg-[#06070d]/90 overflow-hidden flex items-center justify-center p-2">
+                      <div className="relative w-full aspect-square bg-[#06070d]/90 overflow-hidden flex items-center justify-center">
                         <img
                           src={prod.imageUrl}
                           alt={prod.name}
-                          aria-hidden="true"
-                          className="absolute inset-0 w-full h-full object-cover blur-xl opacity-25 scale-110 pointer-events-none select-none"
-                          referrerPolicy="no-referrer"
-                        />
-                        <img
-                          src={prod.imageUrl}
-                          alt={prod.name}
-                          className="relative z-10 max-h-full max-w-full object-contain rounded-xl shadow-xs group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                           referrerPolicy="no-referrer"
                         />
                       </div>
 
                       {/* Card Bottom Details */}
                       <div className="p-3.5 bg-[#0a0b16] border-t border-white/10 space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <h4 className="font-extrabold text-sm text-white group-hover:text-violet-300 transition-colors line-clamp-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <h4
+                            title={prod.name}
+                            className="font-extrabold text-sm text-white group-hover:text-violet-300 transition-colors line-clamp-2 min-h-[2.5rem] leading-snug"
+                          >
                             {prod.name}
                           </h4>
                           <div className="text-right shrink-0">

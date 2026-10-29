@@ -57,12 +57,19 @@ export const Footer: React.FC<FooterProps> = ({ navigate, isAdminLoggedIn = fals
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10">
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-indigo-700 border border-violet-400/30 rounded-lg flex items-center justify-center text-white font-extrabold text-xs shadow-[0_0_10px_rgba(139,92,246,0.3)]">
-                RP
+              <img
+                src={APP_CONFIG.logoUrl}
+                alt="OG. RICH Logo"
+                className="w-11 h-11 rounded-xl object-cover shrink-0"
+              />
+              <div className="flex flex-col">
+                <span className="text-xl font-extrabold tracking-tight text-white leading-tight">
+                  OG. <span className="text-violet-400 font-black">RICH</span>
+                </span>
+                <span className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">
+                  El Real Point Digital
+                </span>
               </div>
-              <span className="text-xl font-extrabold tracking-tight text-white">
-                RICH<span className="text-violet-400 font-semibold">.PRO</span>
-              </span>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
               Catálogo oficial de suscripciones y licencias premium. Canva Pro 18 meses, Gemini Pro 18 meses, herramientas IA y suites de productividad con atención directa vía WhatsApp.

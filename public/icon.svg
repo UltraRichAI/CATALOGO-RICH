@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#140e2b"/>
+      <stop offset="50%" stop-color="#0a0a14"/>
+      <stop offset="100%" stop-color="#190e38"/>
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background rounded rect with safe margin -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect width="504" height="504" x="4" y="4" rx="108" fill="none" stroke="#8b5cf6" stroke-opacity="0.3" stroke-width="4"/>
+
+  <!-- Glowing background aura -->
+  <circle cx="256" cy="256" r="160" fill="#7c3aed" opacity="0.25" filter="url(#glow)"/>
+
+  <!-- Crown / Diamond Top Accent -->
+  <path d="M196 150 L256 120 L316 150 L290 180 L222 180 Z" fill="url(#goldGrad)" filter="url(#glow)"/>
+  <circle cx="256" cy="115" r="8" fill="#fef08a"/>
+
+  <!-- Stylized "R" Logo Geometry -->
+  <g filter="url(#glow)">
+    <!-- Main stem -->
+    <rect x="156" y="170" width="44" height="190" rx="12" fill="url(#primaryGrad)"/>
+
+    <!-- Upper loop of R -->
+    <path d="M180 170 H276 C322 170 348 198 348 238 C348 276 320 304 276 304 H180 Z" 
+          fill="none" 
+          stroke="url(#primaryGrad)" 
+          stroke-width="44" 
+          stroke-linejoin="round"
+          stroke-linecap="round"/>
+
+    <!-- Leg of R -->
+    <path d="M260 286 L332 360" 
+          stroke="url(#primaryGrad)" 
+          stroke-width="44" 
+          stroke-linecap="round"/>
+  </g>
+
+  <!-- Star sparkles -->
+  <polygon points="376,140 382,154 396,160 382,166 376,180 370,166 356,160 370,154" fill="#a78bfa"/>
+  <polygon points="130,220 134,230 144,234 134,238 130,248 126,238 116,234 126,230" fill="#c084fc"/>
+
+  <!-- Badge label "PRO" -->
+  <g transform="translate(256, 420)">
+    <rect x="-68" y="-22" width="136" height="44" rx="12" fill="#7c3aed" fill-opacity="0.9" stroke="#c084fc" stroke-width="2"/>
+    <text x="0" y="7" text-anchor="middle" font-family="system-ui, -apple-system, BlinkMacSystemFont, sans-serif" font-weight="900" font-size="20" letter-spacing="4" fill="#ffffff">RICH PRO</text>
+  </g>
+</svg>

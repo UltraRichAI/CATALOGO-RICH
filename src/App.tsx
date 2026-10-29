@@ -18,6 +18,8 @@ import { CatalogPage } from './pages/CatalogPage.tsx';
 import { ProductDetailPage } from './pages/ProductDetailPage.tsx';
 import { CategoriesPage } from './pages/CategoriesPage.tsx';
 import { AdminPage } from './pages/AdminPage.tsx';
+import { OfflineIndicator } from './components/OfflineIndicator.tsx';
+import { PWAInstallButton } from './components/PWAInstallButton.tsx';
 
 export default function App() {
   const [products, setProducts] = useState<Product[]>(() => {
@@ -224,6 +226,12 @@ export default function App() {
 
           {/* Floating WhatsApp Action Trigger */}
           <WhatsAppFloatingButton />
+
+          {/* PWA Floating Install Banner for Mobile */}
+          <PWAInstallButton variant="banner" />
+
+          {/* Offline Connectivity Notification */}
+          <OfflineIndicator />
         </div>
       </CartProvider>
     </ToastProvider>

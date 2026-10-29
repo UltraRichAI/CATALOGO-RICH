@@ -554,11 +554,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       <div id="admin-auth-container" className="max-w-md mx-auto px-4 py-16 sm:py-24">
         <div className="bg-[#10111d]/90 backdrop-blur-md rounded-3xl border border-white/10 p-8 shadow-2xl space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center mx-auto shadow-[0_0_20px_rgba(139,92,246,0.3)] font-bold text-lg border border-violet-400/30">
-              RP
+            <div className="w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-600 to-indigo-600 p-0.5 mx-auto shadow-[0_0_25px_rgba(168,85,247,0.45)] border border-violet-400/40">
+              <img
+                src={APP_CONFIG.logoUrl}
+                alt="OG. RICH Logo"
+                className="w-full h-full object-cover rounded-[14px]"
+              />
             </div>
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              RICH PRO • Panel Admin
+            <h1 className="text-2xl font-black text-white tracking-tight">
+              OG. RICH • Panel Admin
             </h1>
             <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
               Gestión de cuentas Pro, suscripciones digitales y sincronización con <strong className="text-violet-300">Supabase</strong>.
@@ -665,12 +669,16 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       {/* Top Bar with Admin Session & Sign Out */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-[#10111d]/90 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center font-extrabold text-sm shadow-md border border-violet-400/30">
-            RICH
+          <div className="w-12 h-12 rounded-xl overflow-hidden bg-gradient-to-br from-violet-600 to-indigo-600 p-0.5 shadow-md border border-violet-400/30 shrink-0">
+            <img
+              src={APP_CONFIG.logoUrl}
+              alt="OG. RICH Logo"
+              className="w-full h-full object-cover rounded-[10px]"
+            />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="font-extrabold text-white text-lg">Panel de Administración RICH PRO</h1>
+              <h1 className="font-black text-white text-lg">Panel de Administración OG. RICH</h1>
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-violet-950/60 border border-violet-500/30 text-violet-300 text-[10px] font-bold">
                 {isSupabaseConfigured ? 'Supabase Conectado' : 'Modo Operativo'}
               </span>

@@ -136,9 +136,13 @@ export const HomePage: React.FC<HomePageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           {/* Left Text Block - Directly overlaid on the video without glass box */}
           <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 bg-black/60 border border-white/20 text-violet-200 text-xs font-bold rounded-full uppercase tracking-wider shadow-lg">
-              <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-              <span>RICH PRO • CUENTAS & SUSCRIPCIONES DIGITALES</span>
+            <div className="inline-flex items-center gap-2.5 px-3 py-1 bg-black/70 border border-violet-500/40 text-violet-200 text-xs font-bold rounded-full uppercase tracking-wider shadow-xl">
+              <img
+                src={APP_CONFIG.logoUrl}
+                alt="OG. RICH"
+                className="w-5 h-5 rounded-full object-cover border border-violet-400/50 shrink-0"
+              />
+              <span>OG. RICH • EL REAL POINT DIGITAL</span>
             </div>
 
             <div className="space-y-2">

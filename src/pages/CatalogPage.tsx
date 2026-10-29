@@ -12,6 +12,7 @@ import type { Product, Category, SortOption } from '../types/index.ts';
 import { ProductCard } from '../components/ProductCard.tsx';
 import { ProductGridSkeleton } from '../components/LoadingSkeleton.tsx';
 import { EmptyState } from '../components/EmptyState.tsx';
+import { APP_CONFIG } from '../config/index.ts';
 
 interface CatalogPageProps {
   products: Product[];
@@ -106,8 +107,13 @@ export const CatalogPage: React.FC<CatalogPageProps> = ({
     <div id="catalog-page-container" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8">
       {/* Header & Title */}
       <div>
-        <div className="inline-block px-3 py-1 bg-violet-950/60 border border-violet-500/30 text-violet-300 text-xs font-bold rounded-full uppercase tracking-wider mb-2">
-          RICH PRO • Catálogo Oficial
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-violet-950/60 border border-violet-500/30 text-violet-300 text-xs font-bold rounded-full uppercase tracking-wider mb-2">
+          <img
+            src={APP_CONFIG.logoUrl}
+            alt="OG. RICH"
+            className="w-4 h-4 rounded-full object-cover shrink-0"
+          />
+          <span>OG. RICH • Catálogo Oficial</span>
         </div>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
           Cuentas Pro & Suscripciones Digitales

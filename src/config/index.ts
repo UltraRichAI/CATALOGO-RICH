@@ -5,6 +5,9 @@ const cleanSupabaseUrl = rawSupabaseUrl
   : 'https://yihkcjdgwvtfunlbocmb.supabase.co';
 
 export const APP_CONFIG = {
+  // Official Logo - OG. RICH (El Real Point Digital)
+  logoUrl: '/assets/aistudio/WhatsApp_Image_2026-10-29_at_9.38.13_AM_94ddbadf.jpeg',
+
   // Supabase Configuration - Catalogo-Digital (ID: yihkcjdgwvtfunlbocmb)
   supabaseUrl: cleanSupabaseUrl,
   supabaseAnonKey: (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || 'sb_publishable_iTkqfYNnq7SRyzlxgX5gmg_-AIc5vK7',
@@ -14,12 +17,12 @@ export const APP_CONFIG = {
   // WhatsApp business number in international format (e.g. 51929954728 for Peru)
   whatsappNumber: (import.meta.env.VITE_WHATSAPP_NUMBER as string) || '51929954728',
   
-  // Store Branding & Defaults - RICH PRO
-  storeName: (import.meta.env.VITE_STORE_NAME as string) || 'RICH PRO',
-  storeTagline: 'Cuentas Pro, Canva Pro (Descuento Alumnos Universitarios), Gemini Pro & Suscripciones',
+  // Store Branding & Defaults - OG. RICH (El Real Point Digital)
+  storeName: (import.meta.env.VITE_STORE_NAME as string) || 'OG. RICH',
+  storeTagline: 'El Real Point Digital • Canva Pro S/ 5.00, Gemini Pro, Cuentas IA & Suscripciones',
+  storeSlogan: 'EL REAL POINT DIGITAL',
   currencySymbol: (import.meta.env.VITE_CURRENCY_SYMBOL as string) || 'S/',
   currencyCode: 'PEN',
   supportHours: 'Atención 24/7 • Entregas digitales inmediatas',
   location: 'Activaciones garantizadas y soporte directo vía WhatsApp',
 };
-

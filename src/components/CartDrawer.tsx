@@ -17,6 +17,7 @@ import { useCart } from '../context/CartContext.tsx';
 import { formatCurrency } from '../utils/formatters.ts';
 import { getCartWhatsAppUrl } from '../utils/whatsapp.ts';
 import { PAYMENT_METHODS } from '../data/paymentMethods.ts';
+import { APP_CONFIG } from '../config/index.ts';
 
 interface CartDrawerProps {
   onNavigateToCatalog: () => void;
@@ -66,9 +67,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToCatalog }) =
         {/* Header */}
         <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-[#0e0f18]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-700 text-white flex items-center justify-center shadow-[0_0_12px_rgba(139,92,246,0.3)] border border-violet-400/30">
-              <ShoppingBag className="w-5 h-5" />
-            </div>
+            <img
+              src={APP_CONFIG.logoUrl}
+              alt="OG. RICH Logo"
+              className="w-10 h-10 rounded-xl object-cover shrink-0"
+            />
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-bold text-white text-base">Mi Pedido</h2>

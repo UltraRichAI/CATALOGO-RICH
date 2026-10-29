@@ -55,15 +55,20 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => handleNav('/')}
             className="flex items-center gap-3 group text-left focus:outline-none cursor-pointer"
           >
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 rounded-xl flex items-center justify-center text-white font-extrabold text-sm shadow-[0_0_15px_rgba(139,92,246,0.35)] border border-violet-400/30 group-hover:scale-105 transition-all">
-              RP
-            </div>
+            <img
+              src={APP_CONFIG.logoUrl}
+              alt="OG. RICH Logo"
+              className="w-11 h-11 md:w-12 md:h-12 rounded-xl object-cover shrink-0 group-hover:scale-105 transition-transform"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
             <div className="flex flex-col">
-              <span className="text-lg md:text-xl font-black tracking-tight text-white leading-tight">
-                RICH<span className="text-violet-400 font-extrabold">.PRO</span>
+              <span className="text-lg md:text-xl font-black tracking-tight text-white leading-tight flex items-center gap-1">
+                OG. <span className="text-violet-400 font-black">RICH</span>
               </span>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                Cuentas & Suscripciones
+              <span className="text-[10px] font-extrabold text-cyan-400 uppercase tracking-wider">
+                El Real Point Digital
               </span>
             </div>
           </button>

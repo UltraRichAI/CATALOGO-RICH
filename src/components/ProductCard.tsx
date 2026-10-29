@@ -19,7 +19,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const { showToast } = useToast();
   const waUrl = getProductWhatsAppUrl(product);
 
-  const hasOffer = product.comparePrice && product.comparePrice > product.price;
+  const hasOffer = Boolean(product.comparePrice && product.comparePrice > product.price);
   const discountPercent = hasOffer
     ? Math.round(((product.comparePrice! - product.price) / product.comparePrice!) * 100)
     : 0;
@@ -88,7 +88,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* Content */}
       <div className="flex-1 flex flex-col justify-between">
         <div>
-          {/* Category Tag moved cleanly above the title so it never obscures the image */}
+          {/* Category Tag */}
           {product.category && (
             <div className="text-[11px] font-bold text-violet-400 tracking-wider uppercase mb-1 line-clamp-1">
               {product.category}
@@ -107,13 +107,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Price and Actions */}
         <div className="mt-4 pt-3 border-t border-white/10">
-          <div className="flex items-baseline gap-2 mb-3">
-            <span className="text-lg sm:text-xl font-extrabold text-violet-400 tracking-tight">
-              {formatCurrency(product.price)}
-            </span>
+          <div className="flex items-baseline justify-between gap-1 mb-3">
+            <div className="flex items-baseline gap-2">
+              <span className="text-lg sm:text-xl font-extrabold text-violet-400 tracking-tight">
+                {formatCurrency(product.price)}
+              </span>
+              {hasOffer && (
+                <span className="text-[11px] text-slate-500 line-through font-medium">
+                  {formatCurrency(product.comparePrice!)}
+                </span>
+              )}
+            </div>
             {hasOffer && (
-              <span className="text-[11px] text-slate-500 line-through font-medium">
-                {formatCurrency(product.comparePrice!)}
+              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-1.5 py-0.5 rounded-md shrink-0">
+                Ahorras {formatCurrency(product.comparePrice! - product.price)}
               </span>
             )}
           </div>

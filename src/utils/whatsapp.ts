@@ -20,21 +20,33 @@ export const getCleanWhatsAppNumber = (number = APP_CONFIG.whatsappNumber): stri
 export const getProductWhatsAppUrl = (
   product: Product,
   customNumber = APP_CONFIG.whatsappNumber,
-  isStudent = false
+  isStudent = false,
+  paymentMethod?: string,
+  quantity = 1
 ): string => {
   const number = getCleanWhatsAppNumber(customNumber);
-  const formattedPrice = formatCurrency(product.price);
+  const formattedPrice = formatCurrency(product.price * quantity);
   const isCanva = product.name.toLowerCase().includes('canva');
   
+  const hasSavings = product.comparePrice && product.comparePrice > product.price;
+  const unitSavings = hasSavings ? product.comparePrice! - product.price : 0;
+  const totalSavings = unitSavings * quantity;
+  const savingsPercent = hasSavings ? Math.round((unitSavings / product.comparePrice!) * 100) : 0;
+
   const message = [
-    `Hola ${APP_CONFIG.storeName}, estoy interesado en adquirir:`,
+    `Hola ${APP_CONFIG.storeName}, deseo adquirir la siguiente suscripción:`,
     '',
-    `📌 *${product.name}*`,
-    `💰 Precio: *${formattedPrice}*`,
+    `📌 *${product.name}*` + (quantity > 1 ? ` (x${quantity} unidades)` : ''),
+    `💰 Total: *${formattedPrice}*` + (quantity > 1 ? ` (${formatCurrency(product.price)} c/u)` : ''),
+    hasSavings
+      ? `🔥 *Ahorro con RICH PRO:* ${formatCurrency(totalSavings)} (${savingsPercent}% de ahorro vs. oficial)`
+      : '',
+    paymentMethod ? `💳 *Método de pago preferido:* *${paymentMethod}*` : '',
     isCanva || isStudent ? `🎓 *Aplica Descuento de Alumno Universitario* (S/ 5.00)` : '',
-    product.category ? `🏷️ Categoría: ${product.category}` : '',
+    product.duration ? `⏳ *Duración:* ${product.duration}` : '',
+    product.category ? `🏷️ *Categoría:* ${product.category}` : '',
     '',
-    `¿Me pueden brindar los métodos de pago y pasos para la activación inmediata? Muchas gracias.`
+    `¿Me pueden brindar los datos para realizar el pago por *${paymentMethod || 'Yape/Plin'}* y recibir mi activación inmediata? ¡Muchas gracias!`
   ]
     .filter(Boolean)
     .join('\n');
@@ -47,25 +59,43 @@ export const getProductWhatsAppUrl = (
  */
 export const getCartWhatsAppUrl = (
   items: CartItem[],
-  customNumber = APP_CONFIG.whatsappNumber
+  customNumber = APP_CONFIG.whatsappNumber,
+  paymentMethod?: string
 ): string => {
   const number = getCleanWhatsAppNumber(customNumber);
   const total = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
 
+  // Calculate total savings across all items
+  const totalOfficial = items.reduce((acc, item) => {
+    const regular = item.product.comparePrice && item.product.comparePrice > item.product.price
+      ? item.product.comparePrice
+      : item.product.price;
+    return acc + regular * item.quantity;
+  }, 0);
+
+  const totalSavings = totalOfficial - total;
+  const savingsPercent = totalOfficial > 0 ? Math.round((totalSavings / totalOfficial) * 100) : 0;
+
   const productLines = items.map(
-    (item, index) =>
+    (item) =>
       `• *${item.product.name}* (x${item.quantity}) — ${formatCurrency(item.product.price * item.quantity)}`
   );
 
   const message = [
-    `Hola ${APP_CONFIG.storeName}, quisiera hacer una consulta sobre estos productos de mi pedido:`,
+    `Hola ${APP_CONFIG.storeName}, deseo realizar mi pedido de las siguientes suscripciones:`,
     '',
     ...productLines,
     '',
-    `💳 *Total Estimado:* *${formatCurrency(total)}*`,
+    `💰 *Total a pagar:* *${formatCurrency(total)}*`,
+    totalSavings > 0
+      ? `🔥 *Ahorro Total con RICH PRO:* *${formatCurrency(totalSavings)}* (${savingsPercent}% de descuento vs. oficial)`
+      : '',
+    paymentMethod ? `💳 *Método de pago seleccionado:* *${paymentMethod}*` : '',
     '',
-    `Quisiera confirmar stock, disponibilidad y detalles para concretar la compra. ¡Muchas gracias!`
-  ].join('\n');
+    `Por favor facilítenme los datos para realizar la transferencia por *${paymentMethod || 'Yape / Plin'}* y coordinar la activación de mis accesos. ¡Muchas gracias!`
+  ]
+    .filter(Boolean)
+    .join('\n');
 
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 };

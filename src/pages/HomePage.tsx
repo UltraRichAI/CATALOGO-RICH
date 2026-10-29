@@ -22,6 +22,7 @@ import { CategoryCard } from '../components/CategoryCard.tsx';
 import { ProductGridSkeleton } from '../components/LoadingSkeleton.tsx';
 import { EmptyState } from '../components/EmptyState.tsx';
 import { HeroBackgroundVideo } from '../components/HeroBackgroundVideo.tsx';
+import { PaymentAndSavingsBanner } from '../components/PaymentAndSavingsBanner.tsx';
 import { APP_CONFIG } from '../config/index.ts';
 import { getGeneralWhatsAppUrl } from '../utils/whatsapp.ts';
 
@@ -385,6 +386,9 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
       </HeroBackgroundVideo>
+
+      {/* Payment Methods and Value Proposition Trust Banner */}
+      <PaymentAndSavingsBanner onExploreCatalog={() => onNavigate('/productos')} />
 
       {/* Featured Products Section - Displays ALL products in rows of 4 */}
       <section id="featured-products-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
